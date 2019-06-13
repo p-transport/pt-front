@@ -1,0 +1,28 @@
+{
+  "name": "pt2",
+  "version": "1.0.0",
+  "description": "Public Transport",
+  "author": "Arnor Bogason",
+  "private": true,
+  "scripts": {
+    "dev": "nuxt",
+    "build": "nuxt build",
+    "start": "nuxt start",
+    "generate": "nuxt generate"
+  },
+  "dependencies": {
+    "@nuxtjs/axios": "^5.3.6",
+    "@nuxtjs/google-analytics": "^2.2.0",
+    "@types/leaflet": "^1.4.4",
+    "cross-env": "^5.2.0",
+    "leaflet": "^1.5.1",
+    "nuxt": "^2.4.0",
+    "nuxt-leaflet": "0.0.18",
+    "vue2-leaflet": "^2.1.1"
+  },
+  "devDependencies": {
+    "node-sass": "^4.12.0",
+    "nodemon": "^1.18.9",
+    "sass-loader": "^7.1.0"
+  }
+}
