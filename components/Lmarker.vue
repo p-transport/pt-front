@@ -22,7 +22,7 @@
 
             <div class="modal-content">
 
-              <a class="cta-button" :href="'https://publictransport.tourdesk.is/Tour/Index/1/?tag=&attraction=&sort=0&pt=undefined&dt=undefined&vendor=&onlyFavorite=false&travelmethod=&privateFilter=false&searchParameter=' + title + '&region=0&durationType=0'" target="_blank">Tours to and from {{title}}</a>
+              
 
               <section class="hgroup">
                 <div class="ptitle">Transport to and from</div>
@@ -31,23 +31,48 @@
 
 
               <section class="routes">
-                <div class="route" v-for="route in results" v-bind:key="route.id">
-                  <span class="routeno" :style="'background-color: '+route.provider_color">
-                    <i v-if="route.ferry" class="material-icons md-18">directions_boat</i>
-                    <i v-else-if="route.carferry" class="material-icons md-18">directions_boat</i>
-                    <i v-else-if="route.flight" class="material-icons md-18">flight</i>
-                    <span v-else>{{route.number}}</span>
-                  </span>
-                  <div class="routeinfo">
-                    <h2 class="routename">{{route.destinations.start_point}} - {{route.destinations.end_point}}<span v-if="route.oneway === false"> - {{route.destinations.start_point}}</span></h2>
-                    <div class="provider"><span v-if="route.carferry" class="carferry">Car ferry | </span>Provider: <a :href="route.provider_url" target="_blank">{{route.provider_title}}</a></div>                     
+                <div class="route-section" v-for="routes in results" v-bind:key="routes.id">
+                  <div class="route" v-for="route in routes" v-bind:key="route.id">
+                    <span class="routeno" :style="'background-color: '+route.provider_color">
+                      <i v-if="route.ferry" class="material-icons md-18">directions_boat</i>
+                      <i v-else-if="route.carferry" class="material-icons md-18">directions_boat</i>
+                      <i v-else-if="route.flight" class="material-icons md-18">flight</i>
+                      <span v-else-if="route.number">{{route.number}}</span>
+                      <i v-else class="material-icons md-18">directions_bus</i>
+                    </span>
+                    <div class="routeinfo">
+                      <h2 class="routename">
+                        <span v-if="route.provider_status == 'partner' && route.sales_url">
+                          <a :href="route.sales_url" target="_blank">{{route.destinations.start_point}} - {{route.destinations.end_point}}<span v-if="route.oneway === false"> - {{route.destinations.start_point}}</span></a>
+                        </span>
+                        <span v-else-if="route.provider_status == 'partner' || route.provider_url">
+                          <a :href="route.provider_url" target="_blank">{{route.destinations.start_point}} - {{route.destinations.end_point}}<span v-if="route.oneway === false"> - {{route.destinations.start_point}}</span></a>
+                        </span>
+                        <span v-else>
+                          {{route.destinations.start_point}} - {{route.destinations.end_point}}<span v-if="route.oneway === false"> - {{route.destinations.start_point}}</a></span>
+                        </span>                      
+                        
+                      </h2>
+                      <div class="provider"><span v-if="route.carferry" class="carferry">Car ferry | </span>
+                        Provider: 
+                          <span v-if="route.provider_url"><a :href="route.provider_url" target="_blank">{{route.provider_title}}</a></span>
+                          <span v-else>{{route.provider_title}}</span>
+                          
+                      </div>      
+                                   
+                    </div>
+                  
+                    <a v-if="route.sales_url" class="button book-button" :href="route.sales_url" target="_blank">
+                          Book now
+                    </a>  
                   </div>
-                 
                 </div>
-
               </section>
-
-
+              <section class="modal-footer">
+                <a class="button cta-button" 
+                  :href="'https://publictransport.tourdesk.is/Tour/Index/1/?tag=&attraction=&sort=0&pt=undefined&dt=undefined&vendor=&onlyFavorite=false&travelmethod=&privateFilter=false&searchParameter=' 
+                  + title + '&region=0&durationType=0'" target="_blank">Book Tours in and Around {{title}}</a>
+              </section>
                          
             </div>
 
@@ -155,6 +180,14 @@ export default {
     position: fixed;
   }
 
+  .button {
+    padding: 20px;
+    background-color: green;
+    color: #fff;
+    text-align: center;
+    border-radius: 5px;
+  }
+
   .modal {
     z-index: 1098;
     background-color: rgba(0, 0, 0, 0.25);
@@ -177,17 +210,15 @@ export default {
       background: #fff;
       margin: 0 auto;
       margin-top: 10vh;
-      background: #FFFFFF;
       border: 1px solid #E1E1E1;
       box-sizing: border-box;
       box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);
       border-radius: 3px;
-      overflow-x: none;
-      overflow-y: auto;
+      overflow: hidden;
 
 
       .modal-content {
-        padding: 30px;
+        padding: 30px 30px 0;
 
         .hgroup {
           margin-bottom: 16px;
@@ -202,27 +233,37 @@ export default {
           text-transform: uppercase;
         }
 
-        .cta-button {
-          padding: 20px;
-          background-color: green;
-          color: #fff;
-          display: block;
-          margin: 0 auto;
-          text-align: center;
-          font-size: 18px;
-          font-weight: bold;
-          text-decoration: none;
-          margin: 24px 0;
-        }
+      }
+
+      .modal-footer {
+        padding: 30px;
+        box-shadow: 0px -4px 4px rgba(0, 0, 0, 0.25);
+      }
+
+      .cta-button {
+        color: #fff;
+        display: block;
+        font-size: 18px;
+        font-weight: bold;
+        text-decoration: none;
+        margin: 0 auto;
       }
 
       .routes {
+        overflow-y: scroll;
+        overflow-x: auto;
+        max-height: 330px;
 
         .route {
 
           padding-bottom: 16px;
           margin-bottom: 16px;
           border-bottom: 1px solid #ccc;
+          &:after {
+            content: "";
+            display: table;
+            clear: both;
+          }
 
           .routeno {
             display: block;
@@ -247,6 +288,7 @@ export default {
           }
           .routeinfo {
             display: block;
+            float: left;
             .provider {
               color: #656565;
               a {
@@ -254,6 +296,17 @@ export default {
               }
             }
           }
+        .book-button {
+          width: 100px;
+          float: right;
+          padding: 10px;
+          background-color: #fff;
+          text-transform: uppercase;
+          border: 1px solid #000;
+          color: #000;
+          text-decoration: none;
+          border-radius: 3px;
+        }
         }
       }
 
