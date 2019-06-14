@@ -1,19 +1,5 @@
 <template>
   <div>
-    <b-navbar type="dark">
-      <b-navbar-brand href="#">Public Transport Iceland</b-navbar-brand>
-
-      <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
-      <b-collapse id="nav-collapse" is-nav>
-        
-        <b-navbar-nav class="ml-auto">
-          <b-nav-item href="#">About</b-nav-item>
-          <b-nav-item target="_blank" href="https://cyclingiceland.is/wp-content/uploads/2019/04/PT-2019-enska-vefsidur-mai-2019-.pdf">Download PDF</b-nav-item>
-        </b-navbar-nav>
-
-      </b-collapse>
-
-    </b-navbar>
 
     <b-container class="flex-grow-1" fluid>
       <b-row>
@@ -84,14 +70,6 @@ export default {
   }
   .leaflet-container.leaflet-container {
     background-color: #E3E3E3;
-  }
-
-  .navbar {
-    background-color: #A10B0B;
-    
-    .navbar-brand {
-      font-weight: bold;
-    }
   }
 
 </style>
