@@ -1,5 +1,5 @@
 <template>
-    <div @keyup.esc="changeState('open')">
+    <div>
         <l-circle-marker 
         :title="title"
         :slug="slug"
@@ -10,24 +10,31 @@
         :opacity="opacity"
         :fillColor="fillColor" 
         :fillOpacity="fillOpacity"
-        v-on:click="infobox"
+        v-on:click="modalShow = !modalShow"
         
         >
 
         </l-circle-marker>
 
-        <div v-if="state === 'open'" :class="'modal modal-' + id" @click="changeState('default')">
-          <div class="modal-dialog" @click.stop="changeState('open')">
-            <span @click.stop.prevent="changeState('default')" class="close"><i class="material-icons md-18">close</i></span>
+        
 
-            <div class="modal-content">
+        <b-modal size="lg" scrollable :class="'modal modal-' + id" v-model="modalShow">
+
+          <div slot="modal-title">
+            <section class="hgroup">
+                <div class="ptitle">Transport to and from</div>
+                <h1>{{title}}</h1>
+            </section>
+          </div>
+
+
+
+
+            <div class="modl-content">
 
               
 
-              <section class="hgroup">
-                <div class="ptitle">Transport to and from</div>
-                <h1>{{title}}</h1>
-              </section>
+              
 
 
               <section class="routes">
@@ -49,7 +56,7 @@
                           <a :href="route.provider_url" target="_blank">{{route.destinations.start_point}} - {{route.destinations.end_point}}<span v-if="route.oneway === false"> - {{route.destinations.start_point}}</span></a>
                         </span>
                         <span v-else>
-                          {{route.destinations.start_point}} - {{route.destinations.end_point}}<span v-if="route.oneway === false"> - {{route.destinations.start_point}}</a></span>
+                          {{route.destinations.start_point}} - {{route.destinations.end_point}}<span v-if="route.oneway === false"> - {{route.destinations.start_point}}</span>
                         </span>                      
                         
                       </h2>
@@ -62,23 +69,23 @@
                                    
                     </div>
                   
-                    <a v-if="route.sales_url" class="button book-button" :href="route.sales_url" target="_blank">
+                    <b-button v-if="route.sales_url" variant="outline-primary" class="float-right" :href="route.sales_url" target="_blank">
                           Book now
-                    </a>  
+                    </b-button>  
                   </div>
                 </div>
               </section>
                          
             </div>
-            <section class="modal-footer">
-              <a class="button cta-button" 
-                :href="'https://publictransport.tourdesk.is/Tour/Index/1/?tag=&attraction=&sort=0&pt=undefined&dt=undefined&vendor=&onlyFavorite=false&travelmethod=&privateFilter=false&searchParameter=' 
-                + title + '&region=0&durationType=0'" target="_blank">Book Tours in and Around {{title}}</a>
-            </section>
 
+          
+          <div slot="modal-footer" class="w-100">
+            <b-button block variant="primary" size="lg" 
+              :href="'https://publictransport.tourdesk.is/Tour/Index/1/?tag=&attraction=&sort=0&pt=undefined&dt=undefined&vendor=&onlyFavorite=false&travelmethod=&privateFilter=false&searchParameter=' 
+              + title + '&region=0&durationType=0'" target="_blank">Book Tours in and Around {{title}}</b-button>
           </div>
           
-        </div>
+        </b-modal>
     </div>
 
 </template>
@@ -138,7 +145,7 @@ export default {
   
   data () {
     return {
-      state: 'default',
+      modalShow: false,
       results: {} 
     };
   },
@@ -162,14 +169,6 @@ export default {
   }, */
 
   methods: {
-    changeState: function (newState) {
-      this.state = newState;
-    },
-    infobox: function (event) {
-      // `this` inside methods points to the Vue instance
-      this.changeState('open');
-      // `event` is the native DOM event
-    }
   },
 }
 </script>
@@ -181,85 +180,46 @@ export default {
   }
 
   .button {
-    padding: 20px;
-    background-color: green;
     color: #fff;
     text-align: center;
     border-radius: 5px;
   }
 
   .modal {
-    z-index: 1098;
-    background-color: rgba(0, 0, 0, 0.25);
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    overflow-x: hidden;
-    overflow-y: auto;
-    display: block;
-    padding-right: 15px;
-    position: fixed;
-    cursor: auto;
 
+    .hgroup {
+      padding-top: 4px;
+
+      h1 {
+        font-weight: bold;
+      }
+    }
+
+
+    .ptitle {
+      font-size: 16px;
+      text-transform: uppercase;
+    }
+    
     .modal-dialog {
-      width: 640px;
-      max-width: 100%;
-      min-height: 400px;
-      max-height: 80vh;
-      background: #fff;
-      margin: 0 auto;
-      margin-top: 10vh;
-      border: 1px solid #E1E1E1;
-      box-sizing: border-box;
-      box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);
-      border-radius: 3px;
-      overflow: hidden;
-
-
-      .modal-content {
-        padding: 30px 30px 0;
-
-        .hgroup {
-          margin-bottom: 16px;
-        }
-
-        h1 {
-          font-size: 24px;
-        }
-
-        .ptitle {
-          font-size: 16px;
-          text-transform: uppercase;
-        }
-
-      }
-
-      .modal-footer {
-        padding: 30px;
-        box-shadow: 0px -4px 4px rgba(0, 0, 0, 0.25);
-      }
 
       .cta-button {
         color: #fff;
         display: block;
         font-size: 18px;
         font-weight: bold;
-        text-decoration: none;
-        margin: 0 auto;
       }
 
       .routes {
-        overflow-y: scroll;
-        overflow-x: auto;
-        max-height: 330px;
-        min-height: 300px;
 
         .route {
 
           padding-bottom: 16px;
           margin-bottom: 16px;
           border-bottom: 1px solid #ccc;
+          &:last-child {
+            border-bottom: none;
+          }
           &:after {
             content: "";
             display: table;
@@ -279,7 +239,6 @@ export default {
             clear: both;
             min-width: 40px;
             height: 36px;
-            margin-top: 5px;
             border-radius: 4px;
 
             .material-icons {
@@ -290,7 +249,15 @@ export default {
           .routeinfo {
             display: block;
             float: left;
+
+            .routename {
+              font-size: 1.05rem;
+              margin-bottom: 0.25rem;
+            }
+
             .provider {
+              font-size: 0.8rem;
+
               color: #656565;
               a {
                 color: #656565;
@@ -298,7 +265,6 @@ export default {
             }
           }
         .book-button {
-          width: 100px;
           float: right;
           padding: 10px;
           background-color: #fff;

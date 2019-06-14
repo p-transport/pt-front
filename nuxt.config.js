@@ -43,6 +43,7 @@ export default {
     // Doc: https://axios.nuxtjs.org/usage
     '@nuxtjs/axios',
     'nuxt-leaflet',
+    'bootstrap-vue/nuxt',
     ['@nuxtjs/google-analytics', {
       id: 'UA-73728641-1'
     }]
