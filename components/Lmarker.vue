@@ -68,13 +68,13 @@
                   </div>
                 </div>
               </section>
-              <section class="modal-footer">
-                <a class="button cta-button" 
-                  :href="'https://publictransport.tourdesk.is/Tour/Index/1/?tag=&attraction=&sort=0&pt=undefined&dt=undefined&vendor=&onlyFavorite=false&travelmethod=&privateFilter=false&searchParameter=' 
-                  + title + '&region=0&durationType=0'" target="_blank">Book Tours in and Around {{title}}</a>
-              </section>
                          
             </div>
+            <section class="modal-footer">
+              <a class="button cta-button" 
+                :href="'https://publictransport.tourdesk.is/Tour/Index/1/?tag=&attraction=&sort=0&pt=undefined&dt=undefined&vendor=&onlyFavorite=false&travelmethod=&privateFilter=false&searchParameter=' 
+                + title + '&region=0&durationType=0'" target="_blank">Book Tours in and Around {{title}}</a>
+            </section>
 
           </div>
           
@@ -205,7 +205,7 @@ export default {
     .modal-dialog {
       width: 640px;
       max-width: 100%;
-      min-height: 200px;
+      min-height: 400px;
       max-height: 80vh;
       background: #fff;
       margin: 0 auto;
@@ -253,6 +253,7 @@ export default {
         overflow-y: scroll;
         overflow-x: auto;
         max-height: 330px;
+        min-height: 300px;
 
         .route {
 
