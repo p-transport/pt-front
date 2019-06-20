@@ -10,8 +10,8 @@
         :opacity="opacity"
         :fillColor="fillColor" 
         :fillOpacity="fillOpacity"
-        v-on:click="modalShow = !modalShow"
-        
+        :salesUrl="salesUrl"
+        @click="markerClick('Marker','Click',title)"
         >
 
         </l-circle-marker>
@@ -26,16 +26,8 @@
                 <h1>{{title}}</h1>
             </section>
           </div>
-
-
-
-
+          
             <div class="modl-content">
-
-              
-
-              
-
 
               <section class="routes">
                 <div class="route-section" v-for="routes in results" v-bind:key="routes.id">
@@ -49,27 +41,28 @@
                     </span>
                     <div class="routeinfo">
                       <h2 class="routename">
-                        <span v-if="route.provider_status == 'partner' && route.sales_url">
-                          <a :href="route.sales_url" target="_blank">{{route.destinations.start_point}} - {{route.destinations.end_point}}<span v-if="route.oneway === false"> - {{route.destinations.start_point}}</span></a>
-                        </span>
-                        <span v-else-if="route.provider_status == 'partner' || route.provider_url">
-                          <a :href="route.provider_url" target="_blank">{{route.destinations.start_point}} - {{route.destinations.end_point}}<span v-if="route.oneway === false"> - {{route.destinations.start_point}}</span></a>
-                        </span>
-                        <span v-else>
+                        <template v-if="route.provider_status == 'partner' && route.sales_url">
+                          <a :href="route.sales_url" @click="markerClick('Sales link','Route name',route.number + ' ' + route.sales_url)" target="_blank">{{route.destinations.start_point}} - {{route.destinations.end_point}}<span v-if="route.oneway === false"> - {{route.destinations.start_point}}</span></a>
+                        </template>
+                        <template v-else-if="route.provider_status == 'partner' || route.provider_url">
+                          <a :href="route.provider_url" @click="markerClick('Route link','Route name',route.provider_url)" target="_blank">{{route.destinations.start_point}} - {{route.destinations.end_point}}<span v-if="route.oneway === false"> - {{route.destinations.start_point}}</span></a>
+                        </template>
+                        <template v-else>
                           {{route.destinations.start_point}} - {{route.destinations.end_point}}<span v-if="route.oneway === false"> - {{route.destinations.start_point}}</span>
-                        </span>                      
+                        </template>  
                         
                       </h2>
                       <div class="provider"><span v-if="route.carferry" class="carferry">Car ferry | </span>
                         Provider: 
-                          <span v-if="route.provider_url"><a :href="route.provider_url" target="_blank">{{route.provider_title}}</a></span>
-                          <span v-else>{{route.provider_title}}</span>
+                          <template v-if="route.provider_url"><a :href="route.provider_url" target="_blank">{{route.provider_title}}</a></template>
+                          <template v-else>{{route.provider_title}}</template>
                           
                       </div>      
                                    
                     </div>
                   
-                    <b-button v-if="route.sales_url" variant="outline-primary" class="float-right" :href="route.sales_url" target="_blank">
+                    <b-button v-if="route.sales_url" @click="markerClick('Sales link','Book now',route.sales_url)" 
+                      variant="outline-primary" class="float-right" :href="route.sales_url" target="_blank">
                           Book now
                     </b-button>  
                   </div>
@@ -80,9 +73,16 @@
 
           
           <div slot="modal-footer" class="w-100">
-            <b-button block variant="primary" size="lg" 
+            <template v-if="salesUrl">
+              <b-button @click="markerClick('Sales link','Book tours in '+title,'')"  block variant="primary" size="lg" 
+              :href="salesUrl" target="_blank">Book Tours in and Around {{title}}</b-button>
+            </template>
+            <template v-else>
+              <b-button @click="markerClick('Sales link','Book tours in '+title,'')"  block variant="primary" size="lg" 
               :href="'https://publictransport.tourdesk.is/Tour/Index/1/?tag=&attraction=&sort=0&pt=undefined&dt=undefined&vendor=&onlyFavorite=false&travelmethod=&privateFilter=false&searchParameter=' 
               + title + '&region=0&durationType=0'" target="_blank">Book Tours in and Around {{title}}</b-button>
+            </template>
+            
           </div>
           
         </b-modal>
@@ -92,6 +92,8 @@
 
 <script>
 import axios from 'axios'
+
+import  VueAnalytics from 'vue-analytics'
 
 
 export default {
@@ -141,6 +143,7 @@ export default {
       type: Number,
       default: 0.05
     }, 
+    salesUrl: String
   },
   
   data () {
@@ -152,23 +155,26 @@ export default {
 
   mounted() {
     var self = this
-    axios.get(`http://pt.local/wp-json/pt/v1/marker-routes/${this.slug}`).then((res) => {
+    axios.get(`http://wp.publictransport.is/wp-json/pt/v1/marker-routes/${this.slug}`).then((res) => {
       self.results = res.data
     })
   },
-/* 
-  asyncData ({ params }) {
-
-    return axios.get(`http://pt.local/wp-json/pt/v1/marker-routes/${params.id}`)
-    .then((res) => {
-      console.log(res);
-      return {rootes:res.data}
-  
-    }).catch((err) => console.log(err))
-
-  }, */
 
   methods: {
+    gaEvent: function(cat,act,lab) {
+      this.$ga.event({
+        eventCategory: cat,
+        eventAction: act,
+        eventLabel: lab,
+      });
+    },
+    markerClick: function(at,act,lab) {
+      /* gaEvent(at,act,lab); */
+      this.modalShow = !this.modal
+      this.gaEvent(at,act,lab)
+    }
+
+    
   },
 }
 </script>
@@ -212,14 +218,23 @@ export default {
 
       .routes {
 
+        .route-section {
+          &:last-of-type {
+            .route {
+              &:last-child {
+                padding-bottom: 0;
+                margin-bottom: 0;
+                border-bottom: none;
+              }
+            }
+          }
+        }
+
         .route {
 
           padding-bottom: 16px;
           margin-bottom: 16px;
-          border-bottom: 1px solid #ccc;
-          &:last-child {
-            border-bottom: none;
-          }
+          border-bottom: 1px solid #dee2e6;
           &:after {
             content: "";
             display: table;

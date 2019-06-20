@@ -1,4 +1,4 @@
-import pkg from './package'
+import pkg from './package';
 
 export default {
   mode: 'universal',
@@ -7,12 +7,12 @@ export default {
   ** Headers of the page
   */
   head: {
-    title: 'Public Transport in Iceland',
+    title: 'PublicTransport.is',
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
       { hid: 'description', name: 'description', content: pkg.description }
-    ],
+      ],
     link: [
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
       { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css?family=Roboto:400,700,900|Material+Icons&display=swap' }
@@ -45,7 +45,13 @@ export default {
     'nuxt-leaflet',
     'bootstrap-vue/nuxt',
     ['@nuxtjs/google-analytics', {
-      id: 'UA-73728641-1'
+      id: 'UA-73728641-1',
+      trackEvent: 'true',
+      linkers: ['publictransport.is','publictransport.tourdesk.io'],
+      debug: {
+        enabled: false
+      }
+      /* dev: false */
     }]
   ],
   /*

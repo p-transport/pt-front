@@ -9,16 +9,19 @@
                   <l-map :zoom="zoom" :minZoom="2" :center="center"  :options="{zoomControl: false, attributionControl: false}">
                       <l-control-zoom position="topright"></l-control-zoom>
                       <l-tile-layer :url="url"  :noWrap=true></l-tile-layer>
-                      <Lmarker
-                          v-for="lmarker in markers" 
-                          :key="lmarker.id"
-                          :slug="lmarker.slug"
-                          :lat="lmarker.coordinates.lat_coord"
-                          :lng="lmarker.coordinates.long_coord"
-                          :id="lmarker.id"
-                          :title="lmarker.title"
-                          :routes="lmarker.routes"
+                      <Lmarker v-for="lmarker in markers" :key="lmarker.id"
+                        :slug="lmarker.slug"
+                        :lat="lmarker.coordinates.lat_coord"
+                        :lng="lmarker.coordinates.long_coord"
+                        :id="lmarker.id"
+                        :title="lmarker.title"
+                        :routes="lmarker.routes"
+                        :salesUrl="lmarker.sales_url"
+                        
                       />
+                      <l-control-attribution position="bottomright" prefix="&copy; 2019 Cartography: Hugarflug ehf / Ingi Gunnar Jóhannsson. Published by <a href='https://www.hjolafaerni.is'>Hjólafærni á Íslandi</a> – All rights reserved" >
+                      Gl
+                      </l-control-attribution>
                   </l-map>
               </no-ssr>
           </div>    
@@ -33,8 +36,8 @@
 <script>
 
 import axios from 'axios'
-
 import Lmarker from '~/components/Lmarker.vue'
+import  VueAnalytics from 'vue-analytics'
 
 export default {
     data() {
@@ -45,10 +48,19 @@ export default {
         };
     },
     async asyncData () {
-      const {data} = await axios.get('http://pt.local/wp-json/pt/v1/markers');
+      const {data} = await axios.get('http://wp.publictransport.is/wp-json/pt/v1/markers');
       return {markers:data}
     },
-
+    methods: {
+      gaEvent: function(cat,act,lab) {
+        this.$ga.event({
+          eventCategory: cat,
+          eventAction: act,
+          eventLabel: lab,
+        });
+        console.log('log')
+      }  
+    },
     components: {
       Lmarker
     }

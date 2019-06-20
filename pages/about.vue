@@ -1,21 +1,77 @@
 <template>
-    <b-container class="mt-5">
+    <b-container class="mt-5 mb-5">
         <b-row align-h="center">
-            <b-col lg="6">
-                <h1>About</h1>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras ultricies a ex eget semper. Aliquam varius mollis consequat. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Aliquam tortor velit, interdum id fringilla at, efficitur nec sem. Nunc ante est, convallis eget dolor at, laoreet tempus erat. Ut vel ex scelerisque, facilisis augue id, varius lorem. Donec sollicitudin eget leo ut pulvinar. Etiam blandit efficitur auctor. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras id felis tincidunt, lacinia turpis vitae, convallis orci. Ut semper euismod tortor ultrices eleifend. Aenean facilisis arcu in risus interdum, in ultrices elit commodo. Phasellus aliquet id lacus id consectetur. Morbi mauris ex, pretium tristique neque et, tempus lacinia dui. Ut malesuada ex mauris, a pharetra eros hendrerit vitae.
-                </p>
+            <b-col lg="10">
+                <div class="page">
+                    
+                    <b-row>
+                        <b-col lg="8">
+                            <h1>About</h1>
+                            <div class="page-content" v-html="results.rendered"></div>
+                        </b-col>
+                        <b-col lg="3" class="ml-auto">
+                            <b-row>
+                                <b-col sm="6" md="3" lg="12">
+                                    <a href="http://www.hjolafaerni.is/" target="blank"><img src="/logos/hjolafaerni.png" class="logos logos-hjolafaerni" alt="Hjolafaerni logo"></a>
+                                </b-col>
+
+                                <b-col sm="6" md="3" lg="12">
+                                    <img src="/logos/hugarflug.png" class="logos logos-hugarflug" alt="Hugarflug logo">
+                                </b-col>
+                                
+                                <b-col sm="6" md="3" lg="12">
+                                    <img src="/logos/leidalykill.png" class="logos logos-leidalykill" alt="leidalykill logo">
+                                </b-col>
+                                
+                                <b-col sm="6" md="3" lg="12">
+                                    <a href="http://www.vegagerdin.is/" target="blank"><img src="/logos/vegagerdin.png" class="logos logos-vegagerdin" alt="Vegagerdin logo"></a>
+                                </b-col>
+                                
+                                <b-col sm="6" md="3" lg="12">
+                                    <a href="http://www.ferdamalastofa.is/" target="blank"><img src="/logos/istourist.png" class="logos logos-istourist" alt="Iceland Tourist Board logo"></a>
+                                </b-col>
+                                
+                            </b-row>
+
+                        </b-col>
+                    </b-row>
+                    
+                </div>
             </b-col>
         </b-row>
     </b-container>
 </template>
 
 <script>
-export default {
+import axios from 'axios';
 
+export default {
+    props: {
+        
+    },
+    data () {
+        return {
+            results: {} 
+        }
+    },
+    mounted() {
+        var self = this
+        axios.get('http://wp.publictransport.is/wp-json/wp/v2/pages/434').then((res) => {
+        self.results = res.data.content
+    })
+  },
 }
 </script>
 
-<style>
+<style lang="scss" scoped>
+    .page-content img {
+        max-width: 100%;
+        height: auto;
+    }
 
+    img {
+        max-width: 100%;
+        height: auto;
+    }
 </style>
+
