@@ -82,3 +82,6 @@ dist
 
 # Service worker
 sw.*
+
+# DS Store
+.DS_Store
