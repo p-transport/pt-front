@@ -5,7 +5,7 @@
         <b-col sm="12" class="px-0">
           <div id="map-wrap">
               <no-ssr>
-                  <l-map :zoom="zoom" :minZoom="2" :center="center" :bounds="bounds" :options="{zoomControl: false, attributionControl: false, zoomSnap: 0.1}">
+                  <l-map :zoom="zoom" :minZoom="1" :center="center" :bounds="bounds" :options="{zoomControl: false, attributionControl: false, zoomSnap: 0.1}">
                       <l-control-zoom position="topright"></l-control-zoom>
                       <l-tile-layer :url="url"  :noWrap=true></l-tile-layer>
                       <Lmarker v-for="lmarker in markers" :key="lmarker.id"
