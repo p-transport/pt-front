@@ -2,7 +2,7 @@
     <b-container class="mt-5 mb-5">
         <b-row align-h="center">
             <b-col lg="10">
-                <div class="page">
+                <div class="page page-about">
                     
                     <b-row>
                         <b-col lg="8">
@@ -67,6 +67,10 @@ export default {
     .page-content img {
         max-width: 100%;
         height: auto;
+    }
+
+    .page-about {
+        margin-top: 56px;
     }
 
     img {
