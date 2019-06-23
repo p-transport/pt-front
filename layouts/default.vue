@@ -1,6 +1,6 @@
 <template>
   <div>
-    <b-navbar toggleable="sm" type="dark">
+    <b-navbar toggleable="sm" type="dark" fixed="top">
       <b-navbar-brand href="/">PublicTransport.is</b-navbar-brand>
 
       <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
@@ -32,6 +32,14 @@
     
     .navbar-brand {
       font-weight: bold;
+    }
+
+    .nav-link.nav-link {
+      color: white;
+      &:hover {
+        color: white;
+        text-decoration: underline;
+      }
     }
   }
 </style>

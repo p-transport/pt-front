@@ -1,12 +1,11 @@
 <template>
-  <div>
 
-    <b-container class="flex-grow-1" fluid>
-      <b-row>
+    <b-container fluid class="pl-0 pr-0">
 
+        <b-col sm="12" class="px-0">
           <div id="map-wrap">
               <no-ssr>
-                  <l-map :zoom="zoom" :minZoom="2" :center="center"  :options="{zoomControl: false, attributionControl: false}">
+                  <l-map :zoom="zoom" :minZoom="2" :center="center" :bounds="bounds" :options="{zoomControl: false, attributionControl: false, zoomSnap: 0.1}">
                       <l-control-zoom position="topright"></l-control-zoom>
                       <l-tile-layer :url="url"  :noWrap=true></l-tile-layer>
                       <Lmarker v-for="lmarker in markers" :key="lmarker.id"
@@ -25,12 +24,10 @@
                   </l-map>
               </no-ssr>
           </div>    
-  
-      </b-row>
+        </b-col>
+
+
     </b-container>    
-  </div>
-
-
 </template>
 
 <script>
@@ -44,8 +41,10 @@ export default {
         return {
         url: 'https://map.publictransport.is/{z}/{x}/{y}.png',
         zoom: 2,
-        center: [47.313220, -1.319482]
-        };
+        center: [47.313220, -1.319482],
+        bounds: [[83.287664, -159.522857], 
+                [-44.391598, 149.762878]]
+        }
     },
     async asyncData () {
       const {data} = await axios.get('http://wp.publictransport.is/wp-json/pt/v1/markers');
@@ -58,7 +57,6 @@ export default {
           eventAction: act,
           eventLabel: lab,
         });
-        console.log('log')
       }  
     },
     components: {
@@ -76,12 +74,23 @@ export default {
   }
 
   #map-wrap {
-
-    height: 93vh;
-    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
   }
   .leaflet-container.leaflet-container {
     background-color: #E3E3E3;
+  }
+
+  .leaflet-top.leaflet-top {
+    top: 56px;
+  }
+
+  .provider-color {
+    width: 20%;
+    height: 3px;
+    background-color: #009de0;
+    display: block;
+    border-radius: 1.5px;
   }
 
 </style>

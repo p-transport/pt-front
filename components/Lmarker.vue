@@ -26,45 +26,60 @@
                 <h1>{{title}}</h1>
             </section>
           </div>
-          
+
             <div class="modl-content">
 
               <section class="routes">
                 <div class="route-section" v-for="routes in results" v-bind:key="routes.id">
                   <div class="route" v-for="route in routes" v-bind:key="route.id">
-                    <span class="routeno" :style="'background-color: '+route.provider_color">
-                      <i v-if="route.ferry" class="material-icons md-18">directions_boat</i>
-                      <i v-else-if="route.carferry" class="material-icons md-18">directions_boat</i>
-                      <i v-else-if="route.flight" class="material-icons md-18">flight</i>
-                      <span v-else-if="route.number">{{route.number}}</span>
-                      <i v-else class="material-icons md-18">directions_bus</i>
-                    </span>
                     <div class="routeinfo">
-                      <h2 class="routename">
-                        <template v-if="route.provider_status == 'partner' && route.sales_url">
-                          <a :href="route.sales_url" @click="markerClick('Sales link','Route name',route.number + ' ' + route.sales_url)" target="_blank">{{route.destinations.start_point}} - {{route.destinations.end_point}}<span v-if="route.oneway === false"> - {{route.destinations.start_point}}</span></a>
-                        </template>
-                        <template v-else-if="route.provider_status == 'partner' || route.provider_url">
-                          <a :href="route.provider_url" @click="markerClick('Route link','Route name',route.provider_url)" target="_blank">{{route.destinations.start_point}} - {{route.destinations.end_point}}<span v-if="route.oneway === false"> - {{route.destinations.start_point}}</span></a>
-                        </template>
-                        <template v-else>
-                          {{route.destinations.start_point}} - {{route.destinations.end_point}}<span v-if="route.oneway === false"> - {{route.destinations.start_point}}</span>
-                        </template>  
-                        
-                      </h2>
-                      <div class="provider"><span v-if="route.carferry" class="carferry">Car ferry | </span>
-                        Provider: 
-                          <template v-if="route.provider_url"><a :href="route.provider_url" target="_blank">{{route.provider_title}}</a></template>
-                          <template v-else>{{route.provider_title}}</template>
-                          
-                      </div>      
+                      <b-container fluid class="pl-0 pr-0">
+                        <b-row>
+                          <b-col sm="8">
+                            <b-media no-body>
+                              <b-media-aside class="mr-2">
+                                <span slot="aside" class="routeno" :style="'background-color: '+route.provider_color">
+                                  <i v-if="route.ferry" class="material-icons md-18">directions_boat</i>
+                                  <i v-else-if="route.carferry" class="material-icons md-18">directions_boat</i>
+                                  <i v-else-if="route.flight" class="material-icons md-18">flight</i>
+                                  <span slot="aside" v-else-if="route.number">{{route.number}}</span>
+                                  <i v-else class="material-icons md-18">directions_bus</i>
+                                </span>
+                              </b-media-aside>
+                              <b-media-body>
+                                <h2 class="routename">
+                                  <template v-if="route.provider_status == 'partner' && route.sales_url">
+                                    <a :href="route.sales_url" @click="markerClick('Sales link','Route name',route.number + ' ' + route.sales_url)" target="_blank">{{route.destinations.start_point}} - {{route.destinations.end_point}}<span v-if="route.oneway === false"> - {{route.destinations.start_point}}</span></a>
+                                  </template>
+                                  <template v-else-if="route.provider_status == 'partner' || route.provider_url">
+                                    <a :href="route.provider_url" @click="markerClick('Route link','Route name',route.provider_url)" target="_blank">{{route.destinations.start_point}} - {{route.destinations.end_point}}<span v-if="route.oneway === false"> - {{route.destinations.start_point}}</span></a>
+                                  </template>
+                                  <template v-else>
+                                    {{route.destinations.start_point}} - {{route.destinations.end_point}}<span v-if="route.oneway === false"> - {{route.destinations.start_point}}</span>
+                                  </template>  
+                                  
+                                </h2>
+                                <div class="provider"><span v-if="route.carferry" class="carferry">Car ferry | </span>
+                                  Provider: 
+                                    <template v-if="route.provider_url"><a :href="route.provider_url" target="_blank">{{route.provider_title}}</a></template>
+                                    <template v-else>{{route.provider_title}}</template>
+                                    
+                                </div>      
+                              </b-media-body>
+                            </b-media>
+
+                          </b-col>
+                          <b-col sm="4">
+                            <b-button v-if="route.sales_url" @click="markerClick('Sales link','Book now',route.sales_url)" 
+                              variant="outline-primary" class="booknow w-100 float-md-right mt-3 mt-sm-0" :href="route.sales_url" target="_blank">
+                                  Book now
+                            </b-button>  
+                          </b-col>
+                        </b-row>
+                      </b-container>
                                    
                     </div>
                   
-                    <b-button v-if="route.sales_url" @click="markerClick('Sales link','Book now',route.sales_url)" 
-                      variant="outline-primary" class="float-right" :href="route.sales_url" target="_blank">
-                          Book now
-                    </b-button>  
                   </div>
                 </div>
               </section>
@@ -92,7 +107,6 @@
 
 <script>
 import axios from 'axios'
-
 import  VueAnalytics from 'vue-analytics'
 
 
@@ -180,10 +194,10 @@ export default {
 </script>
 
 <style lang="scss">
-
+/* 
   body {
     position: fixed;
-  }
+  } */
 
   .button {
     color: #fff;
@@ -235,11 +249,6 @@ export default {
           padding-bottom: 16px;
           margin-bottom: 16px;
           border-bottom: 1px solid #dee2e6;
-          &:after {
-            content: "";
-            display: table;
-            clear: both;
-          }
 
           .routeno {
             display: block;
@@ -250,8 +259,7 @@ export default {
             font-size: 18px;
             text-align: center;
             font-weight: 700;
-            margin-right: 10px;
-            clear: both;
+            width: 40px;
             min-width: 40px;
             height: 36px;
             border-radius: 4px;
@@ -262,8 +270,6 @@ export default {
             
           }
           .routeinfo {
-            display: block;
-            float: left;
 
             .routename {
               font-size: 1.05rem;
