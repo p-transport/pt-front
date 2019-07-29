@@ -7,15 +7,16 @@
       <b-collapse id="nav-collapse" is-nav>
         
         <b-navbar-nav class="ml-auto">
-
-          <b-nav-item href="https://cyclingiceland.is/wp-content/uploads/2019/02/CI2018_Cycling_in_Iceland_Infotext_EN_20June2018.pdf" target="_blank">By bike</b-nav-item>
-          <b-nav-item href="/about">About</b-nav-item>
+          <span v-for="info in results" v-bind:key="info.id">
+            <b-nav-item :href="info.link_url" target="_blank">{{info.link_title}}</b-nav-item>
+          </span>
+            <b-nav-item href="/about">About</b-nav-item>
 
 
         <b-nav-item-dropdown text="Download PDF" right>
-          <b-dropdown-item href="/pt2019_en.pdf" target="_blank">EN PDF</b-dropdown-item>
-          <b-dropdown-item href="/pt2019_de.pdf" target="_blank">DE PDF</b-dropdown-item>
-          <b-dropdown-item href="/pt2019_is.pdf" target="_blank">IS PDF</b-dropdown-item>
+          <span v-for="link in results.links" v-bind:key="link.id">
+            <b-dropdown-item :href="link.file" target="_blank">{{link.link_title}}</b-dropdown-item>
+          </span>
         </b-nav-item-dropdown>
 
         </b-navbar-nav>
@@ -25,6 +26,28 @@
     <nuxt />
   </div>
 </template>
+
+<script>
+import axios from 'axios';
+
+export default {
+    props: {
+        info: {},
+        links: {}
+    },
+    data () {
+        return {
+            results: {} 
+        }
+    },
+    mounted() {
+        var self = this
+        axios.get('http://wp.publictransport.is/wp-json/pt/v1/options').then((res) => {
+        self.results = res.data
+    })
+  },
+}
+</script>
 
 <style lang="scss">
   .navbar {
