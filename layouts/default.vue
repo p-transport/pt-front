@@ -5,21 +5,23 @@
 
       <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
       <b-collapse id="nav-collapse" is-nav>
-        
-        <b-navbar-nav class="ml-auto">
-          <span v-for="info in results" v-bind:key="info.id">
-            <b-nav-item :href="info.link_url" target="_blank">{{info.link_title}}</b-nav-item>
-          </span>
-            <b-nav-item href="/about">About</b-nav-item>
+        <no-ssr>
+          <b-navbar-nav class="ml-auto">
+            <span v-for="info in results" v-bind:key="info.id">
+              <b-nav-item :href="info.link_url" target="_blank">{{info.link_title}}</b-nav-item>
+            </span>
+              <b-nav-item href="/howtouse">How to use/Legend</b-nav-item>
+              <b-nav-item href="/about">About</b-nav-item>
 
 
-        <b-nav-item-dropdown text="Download PDF" right>
-          <span v-for="link in results.links" v-bind:key="link.id">
-            <b-dropdown-item :href="link.file" target="_blank">{{link.link_title}}</b-dropdown-item>
-          </span>
-        </b-nav-item-dropdown>
+          <b-nav-item-dropdown :text="results.links_title" right>
+            <span v-for="link in results.links" v-bind:key="link.id">
+              <b-dropdown-item :href="link.file" target="_blank">{{link.link_title}}</b-dropdown-item>
+            </span>
+          </b-nav-item-dropdown>
 
-        </b-navbar-nav>
+          </b-navbar-nav>
+        </no-ssr>
       </b-collapse>
 
     </b-navbar>
