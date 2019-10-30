@@ -1,6 +1,6 @@
 <template>
     <div id="map-wrap" style="height: 100vh; width: 100vw">
-        <no-ssr>
+        <client-only>
             <l-map :zoom=3 :center="center" :options="{zoomControl: false, noWrap: true}">
                 <l-control-zoom position="topright"></l-control-zoom>
                 <l-tile-layer :url="url"></l-tile-layer>
@@ -10,7 +10,7 @@
                     :lat-lng="[lmarker.acf.coordinates.lat_coord,lmarker.acf.coordinates.lng_coord]"
                 />
             </l-map>
-        </no-ssr>
+        </client-only>
     </div>    
 </template>
 

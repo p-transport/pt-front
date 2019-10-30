@@ -4,7 +4,7 @@
 
         <b-col sm="12" class="px-0">
           <div id="map-wrap">
-              <no-ssr>
+              <client-only>
                   <l-map :zoom="zoom" :minZoom="1" :center="center" :bounds="bounds" :options="{zoomControl: false, attributionControl: false, zoomSnap: 0.1}">
                       <l-control-zoom position="topright"></l-control-zoom>
                       <l-tile-layer :url="url"  :noWrap=true></l-tile-layer>
@@ -22,7 +22,7 @@
                       Gl
                       </l-control-attribution>
                   </l-map>
-              </no-ssr>
+              </client-only>
           </div>    
         </b-col>
 

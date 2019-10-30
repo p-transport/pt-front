@@ -17,7 +17,7 @@
         </l-circle-marker>
 
         
-        <no-ssr>
+        <client-only>
 
           <b-modal size="lg" scrollable :class="'modal modal-' + id" v-model="modalShow">
 
@@ -102,7 +102,7 @@
             </div>
             
           </b-modal>
-        </no-ssr>
+        </client-only>
 
     </div>
 

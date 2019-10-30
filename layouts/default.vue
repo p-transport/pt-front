@@ -5,12 +5,12 @@
 
       <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
       <b-collapse id="nav-collapse" is-nav>
-        <no-ssr>
+        <client-only>
           <b-navbar-nav class="ml-auto">
+              <b-nav-item href="/research"><strong>RESEARCH</strong></b-nav-item>
             <span v-for="info in results" v-bind:key="info.id">
               <b-nav-item :href="info.link_url" target="_blank">{{info.link_title}}</b-nav-item>
             </span>
-              <b-nav-item href="/howtouse">How to use/Legend</b-nav-item>
               <b-nav-item href="/about">About</b-nav-item>
 
 
@@ -21,7 +21,7 @@
           </b-nav-item-dropdown>
 
           </b-navbar-nav>
-        </no-ssr>
+        </client-only>
       </b-collapse>
 
     </b-navbar>
