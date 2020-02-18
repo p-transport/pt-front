@@ -12,8 +12,6 @@
             </span>
               <b-nav-item href="/about">About</b-nav-item>
               <b-nav-item href="/howtouse">How to use</b-nav-item>
-
-
           <b-nav-item-dropdown :text="results.links_title" right>
             <span v-for="link in results.links" v-bind:key="link.id">
               <b-dropdown-item :href="link.file" target="_blank">{{link.link_title}}</b-dropdown-item>
