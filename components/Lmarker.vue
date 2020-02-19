@@ -62,7 +62,7 @@
                                   </h2>
                                   <div class="provider"><span v-if="route.carferry" class="carferry">Car ferry | </span>
                                       <template v-if="route.provider_url"><a :href="route.provider_url" target="_blank">{{route.provider_title}}</a></template>
-                                      <template v-else><a href="http://wp.publictransport.is/wp-content/uploads/2019/07/pt2019_en.pdf">{{route.provider_title}} (PDF)</a></template>
+                                      <template v-else><a href="http://wp.publictransport.is/wp-content/uploads/2019/07/pt2019_en.pdf" target="_blank">{{route.provider_title}} (PDF)</a></template>
                                       
                                   </div>      
                                 </b-media-body>
