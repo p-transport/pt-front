@@ -31,7 +31,7 @@ export default {
     },
     mounted() {
         var self = this
-        axios.get('http://wp.publictransport.is/wp-json/wp/v2/pages/488').then((res) => {
+        axios.get('https://wp.publictransport.is/wp-json/wp/v2/pages/488').then((res) => {
         self.results = res.data.content
     })
   },

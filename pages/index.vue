@@ -47,7 +47,7 @@ export default {
         }
     },
     async asyncData () {
-      const {data} = await axios.get('http://wp.publictransport.is/wp-json/pt/v1/markers');
+      const {data} = await axios.get('https://wp.publictransport.is/wp-json/pt/v1/markers');
       return {markers:data}
     },
     methods: {

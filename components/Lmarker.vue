@@ -171,7 +171,7 @@ export default {
 
   mounted() {
     var self = this
-    axios.get(`http://wp.publictransport.is/wp-json/pt/v1/marker-routes/${this.slug}`).then((res) => {
+    axios.get(`https://wp.publictransport.is/wp-json/pt/v1/marker-routes/${this.slug}`).then((res) => {
       self.results = res.data
     })
   },
