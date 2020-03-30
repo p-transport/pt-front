@@ -92,12 +92,6 @@
                 <b-button @click="markerClick('Sales link','Book tours in '+title,'')"  block variant="primary" size="lg" 
                 :href="salesUrl" target="_blank">Book Tours in and Around {{title}}</b-button>
               </template>
-              <template v-else>
-                <b-button @click="markerClick('Sales link','Book tours in '+title,'')"  block variant="primary" size="lg" 
-                :href="'https://publictransport.tourdesk.is/Tour/Index/1/?tag=&attraction=&sort=0&pt=undefined&dt=undefined&vendor=&onlyFavorite=false&travelmethod=&privateFilter=false&searchParameter=' 
-                + title + '&region=0&durationType=0'" target="_blank">Book Tours in and Around {{title}}</b-button>
-              </template>
-              
             </div>
             
           </b-modal>
