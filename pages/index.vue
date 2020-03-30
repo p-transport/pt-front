@@ -1,33 +1,36 @@
 <template>
+    <div>
+      <b-container fluid class="pl-0 pr-0">
 
-    <b-container fluid class="pl-0 pr-0">
-
-        <b-col sm="12" class="px-0">
-          <div id="map-wrap">
-              <client-only>
-                  <l-map :zoom="zoom" :minZoom="1" :center="center" :bounds="bounds" :options="{zoomControl: false, attributionControl: false, zoomSnap: 0.1}">
-                      <l-control-zoom position="topright"></l-control-zoom>
-                      <l-tile-layer :url="url"  :noWrap=true></l-tile-layer>
-                      <Lmarker v-for="lmarker in markers" :key="lmarker.id"
-                        :slug="lmarker.slug"
-                        :lat="lmarker.coordinates.lat_coord"
-                        :lng="lmarker.coordinates.long_coord"
-                        :id="lmarker.id"
-                        :title="lmarker.title"
-                        :routes="lmarker.routes"
-                        :salesUrl="lmarker.sales_url"
-                        
-                      />
-                      <l-control-attribution position="bottomright" prefix="&copy; 2019 Cartography: Hugarflug ehf / Ingi Gunnar Jóhannsson. Published by <a href='https://www.hjolafaerni.is'>Hjólafærni á Íslandi</a> – All rights reserved" >
-                      Gl
-                      </l-control-attribution>
-                  </l-map>
-              </client-only>
-          </div>    
-        </b-col>
+          <b-col sm="12" class="px-0">
+            <div id="map-wrap">
+                <client-only>
+                    <l-map :zoom="zoom" :minZoom="1" :center="center" :bounds="bounds" :options="{zoomControl: false, attributionControl: false, zoomSnap: 0.1}">
+                        <l-control-zoom position="topright"></l-control-zoom>
+                        <l-tile-layer :url="url"  :noWrap=true></l-tile-layer>
+                        <Lmarker v-for="lmarker in markers" :key="lmarker.id"
+                          :slug="lmarker.slug"
+                          :lat="lmarker.coordinates.lat_coord"
+                          :lng="lmarker.coordinates.long_coord"
+                          :id="lmarker.id"
+                          :title="lmarker.title"
+                          :routes="lmarker.routes"
+                          :salesUrl="lmarker.sales_url"
+                          
+                        />
+                        <l-control-attribution position="bottomright" prefix="&copy; 2019 Cartography: Hugarflug ehf / Ingi Gunnar Jóhannsson. Published by <a href='https://www.hjolafaerni.is'>Hjólafærni á Íslandi</a> – All rights reserved" >
+                        Gl
+                        </l-control-attribution>
+                    </l-map>
+                </client-only>
+            </div>    
+          </b-col>
 
 
-    </b-container>    
+      </b-container>
+
+    </div>
+
 </template>
 
 <script>
@@ -62,7 +65,6 @@ export default {
     components: {
       Lmarker
     }
-
 }
 
 </script>

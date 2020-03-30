@@ -24,6 +24,13 @@
 
     </b-navbar>
     <nuxt />
+      <b-modal id="covid" title="Information regarding Coronavirus" header-bg-variant="dark" header-text-variant="warning" ok-only>
+        <p>The coronavirus pandemy severly affects travelling in Iceland.</p>
+        <p>This website shows the public transport routes of last year, 2019.</p>
+        <p>During the pandemy, routes may be suspended or travel bans may apply.</p>
+        <p>Contact bus / ferry / airline operators before travelling; for websites / phone numbers, see "<a href="https://wp.publictransport.is/wp-content/uploads/2019/07/pt2019_en.pdf">Map with operators</a>".</p>
+        <p>Avoid unnecessary travels, and follow rules on <a href="https://www.covid.is/" target="_blank">www.covid.is</a></p>
+      </b-modal>    
   </div>
 </template>
 
@@ -44,6 +51,14 @@ export default {
         var self = this
         axios.get('https://wp.publictransport.is/wp-json/pt/v1/options').then((res) => {
         self.results = res.data
+
+      if (!this.$cookies.get('covidModal', true)) {
+        this.$bvModal.show('covid');
+        this.$cookies.set('covidModal', true, {
+          path: '/',
+          maxAge: 60 * 60 * 24 * 7
+        })
+      }        
     })
   },
 }

@@ -44,6 +44,7 @@ export default {
     '@nuxtjs/axios',
     'nuxt-leaflet',
     'bootstrap-vue/nuxt',
+    'cookie-universal-nuxt',
     ['@nuxtjs/google-analytics', {
       id: 'UA-73728641-1',
       trackEvent: 'true',
