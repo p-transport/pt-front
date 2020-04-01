@@ -7,6 +7,7 @@
       <b-collapse id="nav-collapse" is-nav>
         <client-only>
           <b-navbar-nav class="ml-auto">
+              <b-button v-b-modal.covid variant="light">C-19</b-button>
             <span v-for="info in results" v-bind:key="info.id">
               <b-nav-item :href="info.link_url" target="_blank">{{info.link_title}}</b-nav-item>
             </span>
