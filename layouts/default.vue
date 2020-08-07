@@ -29,7 +29,7 @@
         <p>The coronavirus pandemy severly affects travelling in Iceland.</p>
         <p>This website shows the public transport routes of last year, 2019.</p>
         <p>During the pandemy, routes may be suspended or travel bans may apply.</p>
-        <p>Contact bus / ferry / airline operators before travelling; for websites / phone numbers, see "<a href="https://wp.publictransport.is/wp-content/uploads/2019/07/pt2019_en.pdf">Map with operators</a>".</p>
+        <p>Contact bus / ferry / airline operators before travelling; for websites / phone numbers, see "<a href="https://wp.publictransport.is/wp-content/uploads/2020/06/pt2020_en.pdf">Map with operators</a>".</p>
         <p>Avoid unnecessary travels, and follow rules on <a href="https://www.covid.is/" target="_blank">www.covid.is</a></p>
       </b-modal>    
   </div>

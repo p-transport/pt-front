@@ -62,7 +62,7 @@
                                   </h2>
                                   <div class="provider"><span v-if="route.carferry" class="carferry">Car ferry | </span>
                                       <template v-if="route.provider_url"><a :href="route.provider_url" target="_blank">{{route.provider_title}}</a></template>
-                                      <template v-else><a href="http://wp.publictransport.is/wp-content/uploads/2019/07/pt2019_en.pdf" target="_blank">{{route.provider_title}} (PDF)</a></template>
+                                      <template v-else><a href="https://wp.publictransport.is/wp-content/uploads/2020/06/pt2020_en.pdf" target="_blank">{{route.provider_title}} (PDF)</a></template>
                                       
                                   </div>      
                                 </b-media-body>
@@ -131,7 +131,7 @@ export default {
     },
     weight: {
       type: Number,
-      default: 5
+      default: 2
     },
     radius: {
       type: Number,
@@ -143,7 +143,7 @@ export default {
     },
     opacity: {
       type: Number,
-      default: 0.3
+      default: 0.2
     },
     fillColor: {
       type: String,
@@ -151,7 +151,7 @@ export default {
     },
     fillOpacity: {
       type: Number,
-      default: 0.05
+      default: 0
     }, 
     salesUrl: String
   },
