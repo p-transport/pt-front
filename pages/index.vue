@@ -7,7 +7,9 @@
                 <client-only>
                     <l-map :zoom="zoom" :minZoom="1" :center="center" :bounds="bounds" :options="{zoomControl: false, attributionControl: false, zoomSnap: 0.1}">
                         <l-control-zoom position="topright"></l-control-zoom>
-                        <l-tile-layer :url="url"  :noWrap=true></l-tile-layer>
+
+                        <l-image-overlay url="/ptkort2020.svg" :bounds="bounds"></l-image-overlay>
+
                         <Lmarker v-for="lmarker in markers" :key="lmarker.id"
                           :slug="lmarker.slug"
                           :lat="lmarker.coordinates.lat_coord"
@@ -43,7 +45,7 @@ export default {
     data() {
         return {
         url: 'https://map.publictransport.is/{z}/{x}/{y}.png',
-        zoom: 2,
+        zoom: 10,
         center: [47.313220, -1.319482],
         bounds: [[83.287664, -159.522857], 
                 [-44.391598, 149.762878]]
