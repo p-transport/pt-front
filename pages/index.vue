@@ -5,21 +5,24 @@
           <b-col sm="12" class="px-0">
             <div id="map-wrap">
                 <client-only>
-                    <l-map :zoom="zoom" :minZoom="1" :center="center" :bounds="bounds" :options="{zoomControl: false, attributionControl: false, zoomSnap: 0.1}">
+                    <l-map :zoom="zoom" :minZoom="2" :center="center" :bounds="bounds" :options="{zoomControl: false, attributionControl: false, zoomSnap: 0.1}">
                         <l-control-zoom position="topright"></l-control-zoom>
 
                         <l-image-overlay url="/ptkort2020.svg" :bounds="bounds"></l-image-overlay>
 
                         <Lmarker v-for="lmarker in markers" :key="lmarker.id"
                           :slug="lmarker.slug"
-                          :lat="lmarker.coordinates.lat_coord"
-                          :lng="lmarker.coordinates.long_coord"
+                          :swlat="lmarker.coordinates.lat_coord"
+                          :swlng="lmarker.coordinates.long_coord"
+                          :nelat="lmarker.coordinates.lat_coord_ne"
+                          :nelng="lmarker.coordinates.long_coord_ne"
                           :id="lmarker.id"
                           :title="lmarker.title"
                           :routes="lmarker.routes"
                           :salesUrl="lmarker.sales_url"
                           
                         />
+                        
                         <l-control-attribution position="bottomright" prefix="&copy; 2019 Cartography: Hugarflug ehf / Ingi Gunnar Jóhannsson. Published by <a href='https://www.hjolafaerni.is'>Hjólafærni á Íslandi</a> – All rights reserved" >
                         Gl
                         </l-control-attribution>
@@ -45,14 +48,14 @@ export default {
     data() {
         return {
         url: 'https://map.publictransport.is/{z}/{x}/{y}.png',
-        zoom: 10,
+        zoom: 3.2,
         center: [47.313220, -1.319482],
         bounds: [[83.287664, -159.522857], 
                 [-44.391598, 149.762878]]
         }
     },
     async asyncData () {
-      const {data} = await axios.get('https://wp.publictransport.is/wp-json/pt/v1/markers');
+      const {data} = await axios.get('http://pt.local/wp-json/pt/v1/markers');
       return {markers:data}
     },
     methods: {

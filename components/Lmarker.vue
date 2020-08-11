@@ -1,9 +1,9 @@
 <template>
     <div>
-        <l-circle-marker 
+        <l-rectangle v-if="nelat != 57" 
         :title="title"
         :slug="slug"
-        :lat-lng="[lat,lng]" 
+        :bounds="[[swlat,swlng],[nelat,nelng]]" 
         :weight="weight"
         :radius="radius" 
         :color="color" 
@@ -14,7 +14,7 @@
         @click="markerClick('Marker','Click',title)"
         >
 
-        </l-circle-marker>
+        </l-rectangle>
 
         
         <client-only>
@@ -121,13 +121,19 @@ export default {
       type: String,
       default: ""
     },
-    lat: {
+    swlat: {
       type: String,
       default: "47.413220"
     },
-    lng: {
+    swlng: {
       type: String,
       default: "-1.219482"
+    },
+    nelat: {
+      type: String
+    },
+    nelng: {
+      type: String
     },
     weight: {
       type: Number,
@@ -143,7 +149,7 @@ export default {
     },
     opacity: {
       type: Number,
-      default: 0.2
+      default: 0
     },
     fillColor: {
       type: String,
@@ -183,7 +189,6 @@ export default {
       this.modalShow = !this.modal
       this.gaEvent(at,act,lab)
     }
-
     
   },
 }
