@@ -8,20 +8,43 @@
                     <l-map :zoom="zoom" :minZoom="2" :center="center" :bounds="bounds" :options="{zoomControl: false, attributionControl: false, zoomSnap: 0.1}">
                         <l-control-zoom position="topright"></l-control-zoom>
 
-                        <l-image-overlay url="/ptkort2020.svg" :bounds="bounds"></l-image-overlay>
+                        <l-image-overlay url="/pt2020-02_en.svg" :bounds="bounds"></l-image-overlay>
 
-                        <Lmarker v-for="lmarker in markers" :key="lmarker.id"
+<!--                         <Lmarker v-for="lmarker in markers" :key="lmarker.id"
                           :slug="lmarker.slug"
                           :swlat="lmarker.coordinates.lat_coord"
                           :swlng="lmarker.coordinates.long_coord"
                           :nelat="lmarker.coordinates.lat_coord_ne"
                           :nelng="lmarker.coordinates.long_coord_ne"
+                          :polygon="lmarker.polygon"
                           :id="lmarker.id"
                           :title="lmarker.title"
                           :routes="lmarker.routes"
                           :salesUrl="lmarker.sales_url"
-                          
-                        />
+                        /> -->
+
+<!--                         <Lpolymarker v-for="lmarker in markers" :key="lmarker.id"
+                          :slug="lmarker.slug"
+                          :latlngs="lmarker.geojson.geometry.coordinates"
+                          :id="lmarker.id"
+                          :title="lmarker.title"
+                          :routes="lmarker.routes"
+                          :salesUrl="lmarker.sales_url"                        
+                        /> -->
+
+                        <lpolymarker v-for="lmarker in markers" :key="lmarker.id"
+                          :id="lmarker.id"
+                          :slug="lmarker.slug"
+                          :title="lmarker.title"
+                          :routes="lmarker.routes"
+                          :salesUrl="lmarker.sales_url"
+                          :lat="lmarker.coordinates.lat_coord"
+                          :lng="lmarker.coordinates.long_coord"
+                          :geojson="parsedGeoJson(lmarker.geojson)"
+                        >
+                        </lpolymarker>
+
+
                         
                         <l-control-attribution position="bottomright" prefix="&copy; 2019 Cartography: Hugarflug ehf / Ingi Gunnar Jóhannsson. Published by <a href='https://www.hjolafaerni.is'>Hjólafærni á Íslandi</a> – All rights reserved" >
                         Gl
@@ -42,6 +65,7 @@
 
 import axios from 'axios'
 import Lmarker from '~/components/Lmarker.vue'
+import Lpolymarker from '~/components/Lpolymarker.vue'
 import  VueAnalytics from 'vue-analytics'
 
 export default {
@@ -55,7 +79,7 @@ export default {
         }
     },
     async asyncData () {
-      const {data} = await axios.get('http://pt.local/wp-json/pt/v1/markers');
+      const {data} = await axios.get('https://wp.publictransport.is/wp-json/pt/v1/markers');
       return {markers:data}
     },
     methods: {
@@ -65,10 +89,18 @@ export default {
           eventAction: act,
           eventLabel: lab,
         });
-      }  
+      },
+      parsedGeoJson: function (geojson) {
+        if (geojson) {
+          return JSON.parse(geojson)
+        }
+      }
+    },
+    computed: {
     },
     components: {
-      Lmarker
+      Lmarker,
+      Lpolymarker
     }
 }
 
@@ -76,7 +108,7 @@ export default {
 
 <style lang="scss">
   * {
-    font-family: Roboto, sans-serif;
+    font-family: Inter, sans-serif;
     box-sizing: border-box;
   }
 

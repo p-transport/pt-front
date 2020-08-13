@@ -1,9 +1,9 @@
 <template>
     <div>
-         <l-rectangle v-if="nelat != 57" 
+<!--          <l-polygon 
         :title="title"
         :slug="slug"
-        :bounds="[[swlat,swlng],[nelat,nelng]]" 
+        :latLngs="latLngs" 
         :weight="weight"
         :radius="radius" 
         :color="color" 
@@ -12,8 +12,37 @@
         :fillOpacity="fillOpacity"
         :salesUrl="salesUrl"
         @click="markerClick('Marker','Click',title)"
+
         >
-        </l-rectangle> 
+        </l-polygon>  -->
+
+        <template v-if="geojson">
+          <l-geo-json
+            :geojson="geojson"
+            :options-style="styleFunction"
+            @click="markerClick('Marker','Click',title)"
+          >
+          </l-geo-json>          
+        </template>
+        <template v-else>
+          <l-circle-marker 
+          :title="title"
+          :slug="slug"
+          :lat-lng="[lat,lng]" 
+          :weight="weight"
+          :radius="radius" 
+          :color="color" 
+          :opacity="opacity"
+          :fillColor="fillColor" 
+          :fillOpacity="fillOpacity"
+          :salesUrl="salesUrl"
+          @click="markerClick('Marker','Click',title)"
+          >
+
+          </l-circle-marker>
+        </template>
+
+
 
         
         <client-only>
@@ -121,22 +150,16 @@ export default {
       type: String,
       default: ""
     },
-    swlat: {
+    lat: {
       type: String,
       default: "47.413220"
     },
-    swlng: {
+    lng: {
       type: String,
       default: "-1.219482"
     },
-    nelat: {
-      type: String
-    },
-    nelng: {
-      type: String
-    },
-    polygon: {
-      type: String
+    geojson: {
+      type: Object
     },
     weight: {
       type: Number,
@@ -148,25 +171,22 @@ export default {
     },
     color: {
       type: String,
-      default: '#2F3C7E'
+      default: '#ff0000'
     },
     opacity: {
       type: Number,
-      default: 0.2
-    },
-    fillColor: {
-      type: String,
-      default: '#2F3C7E'      
+      default: 0
     },
     fillOpacity: {
       type: Number,
-      default: 0
+      default: 0.2
     }, 
     salesUrl: String
   },
   
   data () {
     return {
+      fillColor: "#000",
       modalShow: false,
       results: {} 
     };
@@ -196,7 +216,20 @@ export default {
   },
 
   computed: {
-    polyLatLngs: function () {
+    latLngs: function () {
+      return this.geojson.geometry.coordinates;
+    },
+    styleFunction() {
+      const fillColor = this.fillColor;
+      return () => {
+        return {
+          weight: 2,
+          color: "#ECEFF1",
+          opacity: 0,
+          fillColor: fillColor,
+          fillOpacity: 0
+        };
+      };
     }
   }
 }
