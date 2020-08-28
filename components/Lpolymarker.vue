@@ -226,7 +226,7 @@ export default {
           weight: 2,
           color: "#ECEFF1",
           opacity: 0,
-          fillColor: fillColor,
+          fillColor: "#0000ff",
           fillOpacity: 0
         };
       };

@@ -8,7 +8,7 @@
                     <l-map :zoom="zoom" :minZoom="2" :center="center" :bounds="bounds" :options="{zoomControl: false, attributionControl: false, zoomSnap: 0.1}">
                         <l-control-zoom position="topright"></l-control-zoom>
 
-                        <l-image-overlay url="/pt2020-02_en.svg" :bounds="bounds"></l-image-overlay>
+                        <l-image-overlay url="/pt2020-02_en.svg" :bounds="bounds" :center="center"></l-image-overlay>
 
 <!--                         <Lmarker v-for="lmarker in markers" :key="lmarker.id"
                           :slug="lmarker.slug"
@@ -38,8 +38,6 @@
                           :title="lmarker.title"
                           :routes="lmarker.routes"
                           :salesUrl="lmarker.sales_url"
-                          :lat="lmarker.coordinates.lat_coord"
-                          :lng="lmarker.coordinates.long_coord"
                           :geojson="parsedGeoJson(lmarker.geojson)"
                         >
                         </lpolymarker>
@@ -72,7 +70,7 @@ export default {
     data() {
         return {
         url: 'https://map.publictransport.is/{z}/{x}/{y}.png',
-        zoom: 3.2,
+        zoom: 2,
         center: [47.313220, -1.319482],
         bounds: [[83.287664, -159.522857], 
                 [-44.391598, 149.762878]]
