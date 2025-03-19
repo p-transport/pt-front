@@ -21,14 +21,14 @@ import axios from 'axios'
 export default {
     data() {
         return {
-        url: 'https://map.publictransport.is/{z}/{x}/{y}.png',
+        url: 'https://map.publictransport.is/2022/{z}/{x}/{y}.png',
         zoom: 8,
         center: [47.313220, -1.319482]
         };
     },
 
     async asyncData () {
-      const {data} = await axios.get('https://pt.local/wp-json/acf/v3/markers/');
+      const {data} = await axios.get('https://wp.publictransport.is/wp-json/acf/v3/markers/');
       return {markers:data}
     }
 /* 

@@ -8,7 +8,7 @@
                     <l-map :zoom="zoom" :minZoom="2" :center="center" :bounds="bounds" :options="{zoomControl: false, attributionControl: false, zoomSnap: 0.1}">
                         <l-control-zoom position="topright"></l-control-zoom>
 
-                        <l-image-overlay url="/pt2020-02_en.svg" :bounds="bounds" :center="center"></l-image-overlay>
+                        <l-image-overlay url="https://publictransport.is/pt20240711_en.svg" :bounds="bounds" :center="center"></l-image-overlay>
 
 <!--                         <Lmarker v-for="lmarker in markers" :key="lmarker.id"
                           :slug="lmarker.slug"
@@ -44,7 +44,7 @@
 
 
                         
-                        <l-control-attribution position="bottomright" prefix="&copy; 2019 Cartography: Hugarflug ehf / Ingi Gunnar Jóhannsson. Published by <a href='https://www.hjolafaerni.is'>Hjólafærni á Íslandi</a> – All rights reserved" >
+                        <l-control-attribution position="bottomright" prefix="&copy; 2023 Cartography: Hugarflug ehf / Ingi Gunnar Jóhannsson. Published by <a href='https://www.hjolafaerni.is'>Hjólafærni á Íslandi</a> – All rights reserved" >
                         Gl
                         </l-control-attribution>
                     </l-map>
@@ -69,7 +69,7 @@ import  VueAnalytics from 'vue-analytics'
 export default {
     data() {
         return {
-        url: 'https://map.publictransport.is/{z}/{x}/{y}.png',
+        url: 'https://map.publictransport.is/2022/{z}/{x}/{y}.png',
         zoom: 2,
         center: [47.313220, -1.319482],
         bounds: [[83.287664, -159.522857], 
