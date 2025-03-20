@@ -121,11 +121,6 @@ export default {
           linksTitle.value = data.links_title
         }
         
-        console.log('Navbar data loaded:', { 
-          infoLink: infoLink.value,
-          links: links.value,
-          linksTitle: linksTitle.value
-        })
       } catch (error) {
         console.error('Error fetching navbar links:', error)
       }
