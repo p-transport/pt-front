@@ -4,8 +4,8 @@
       <template v-if="components && components.LMap">
         <component :is="components.LMap" 
                   ref="map"
-                  :zoom="zoom" 
-                  :center="center" 
+                  :zoom="computedZoom" 
+                  :center="computedCenter" 
                   :bounds="bounds" 
                   :use-global-leaflet="true"
                   :options="mapOptions"
@@ -85,7 +85,7 @@ export default {
     const windowWidth = ref(0) // Track window width for responsive design
     
     // Map settings adjusted for Iceland SVG
-    const zoom = ref(2.5)
+    const zoom = ref(2.3)
     const center = ref([47.313220, -1.319482])
     
     // Set bounds for Iceland SVG map - these should match your SVG bounds
@@ -93,6 +93,34 @@ export default {
       [83.287664, -159.522857], 
       [-44.391598, 149.762878]
     ])
+    
+    // Compute zoom level based on screen width
+    const computedZoom = computed(() => {
+      // More zoomed out for mobile devices
+      if (windowWidth.value < 480) {
+        return 1.8; // Significantly more zoomed out for phones
+      } else if (windowWidth.value < 768) {
+        return 2.0; // Slightly more zoomed out for tablets
+      } else {
+        return 2.3; // Original zoom for desktops
+      }
+    })
+    
+    // Compute center point based on screen width to shift view to the left on mobile
+    const computedCenter = computed(() => {
+      // For smaller phones, shift the center even more to the left
+      if (windowWidth.value < 480) {
+        return [47.313220, -80.319482]; // Very significant shift for small phones
+      } 
+      // For tablets, shift moderately to the left
+      else if (windowWidth.value < 768) {
+        return [47.313220, -60.319482]; // Moderate shift for tablets
+      } 
+      // Use default center for desktop
+      else {
+        return [47.313220, -1.319482];
+      }
+    })
     
     // Map options with explicit attribution and zoom control settings
     const mapOptions = markRaw({
@@ -156,6 +184,9 @@ export default {
         // Set bounds
         mapObject.leafletObject.setMaxBounds(bounds.value)
         
+        // Set initial view based on screen width
+        mapObject.leafletObject.setView(computedCenter.value, computedZoom.value, { animate: false });
+        
         // Force a redraw of the map after a short delay
         setTimeout(() => {
           mapObject.leafletObject.invalidateSize()
@@ -210,6 +241,15 @@ export default {
     // Handle window resize
     const handleResize = () => {
       windowWidth.value = window.innerWidth
+      
+      // Force map to update with new zoom level when window is resized
+      if (map.value && map.value.leafletObject) {
+        map.value.leafletObject.setZoom(computedZoom.value)
+        // Update center position based on viewport size
+        map.value.leafletObject.setView(computedCenter.value, computedZoom.value, { animate: true });
+        // Invalidate size to ensure proper rendering
+        map.value.leafletObject.invalidateSize()
+      }
     }
     
     // Clean up event listener on unmount
@@ -229,7 +269,9 @@ export default {
       debugMode,
       parsedGeoJson,
       onMapReady,
-      adBannerSize
+      adBannerSize,
+      computedZoom,
+      computedCenter
     }
   }
 }
