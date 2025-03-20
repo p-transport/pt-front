@@ -1,68 +1,48 @@
 <template>
-  <div>
-    <b-navbar toggleable="sm" type="dark" fixed="top">
-      <b-navbar-brand href="/">PublicTransport.is</b-navbar-brand>
-
-      <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
-      <b-collapse id="nav-collapse" is-nav>
-        <client-only>
-          <b-navbar-nav class="ml-auto">
-            <span v-for="info in results" v-bind:key="info.id">
-              <b-nav-item :href="info.link_url" target="_blank">{{info.link_title}}</b-nav-item>
-            </span>
-              <b-nav-item href="/about">About</b-nav-item>
-              <b-nav-item href="/howtouse">How to use</b-nav-item>
-          <b-nav-item-dropdown :text="results.links_title" right>
-            <span v-for="link in results.links" v-bind:key="link.id">
-              <b-dropdown-item :href="link.file" target="_blank">{{link.link_title}}</b-dropdown-item>
-            </span>
-          </b-nav-item-dropdown>
-
-          </b-navbar-nav>
-        </client-only>
-      </b-collapse>
-
-    </b-navbar>
-    <nuxt /> 
+  <div class="min-h-screen relative">
+    <Navbar />
+    
+    <!-- Remove padding to allow map to go full height -->
+    <main class="h-full">
+      <slot />
+    </main>
   </div>
 </template>
 
 <script>
-import axios from 'axios';
+import Navbar from '~/components/Navbar.vue'
 
 export default {
-    props: {
-        info: {},
-        links: {}
-    },
-    data () {
-        return {
-            results: {} 
-        }
-    },
-    mounted() {
-        var self = this
-        axios.get('https://wp.publictransport.is/wp-json/pt/v1/options').then((res) => {
-        self.results = res.data     
-    })
-  },
+  components: {
+    Navbar
+  }
 }
 </script>
 
-<style lang="scss">
-  .navbar {
-    background-color: #A10B0B;
-    
-    .navbar-brand {
-      font-weight: bold;
-    }
+<style>
+:root {
+  --primary: #0066cc;
+  --primary-hover: #0052a3;
+}
 
-    .nav-link.nav-link {
-      color: white;
-      &:hover {
-        color: white;
-        text-decoration: underline;
-      }
-    }
-  }
+/* Global styles */
+.text-primary {
+  color: var(--primary);
+}
+
+.bg-primary {
+  background-color: var(--primary);
+}
+
+.hover\:bg-primary:hover {
+  background-color: var(--primary);
+}
+
+.hover\:text-primary:hover {
+  color: var(--primary);
+}
+
+.border-primary {
+  border-color: var(--primary);
+}
 </style>
