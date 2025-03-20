@@ -34,7 +34,7 @@
               :fillOpacity="debugMode ? 0.4 : 0"
               :weight="marker.weight || 2"
               :radius="marker.radius || 10"
-              :sales-url="marker.url"
+              :sales-url="marker.sales_url"
               :debug-mode="debugMode"
             />
           </template>

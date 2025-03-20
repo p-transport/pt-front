@@ -1,0 +1,34 @@
+/* Leaflet specific styles */
+.leaflet-container {
+  height: 100%;
+  width: 100%;
+}
+
+/* Fix for Leaflet images */
+.leaflet-control-zoom-in,
+.leaflet-control-zoom-out,
+.leaflet-marker-icon,
+.leaflet-marker-shadow,
+.leaflet-tile,
+.leaflet-tile-container img {
+  max-width: none !important;
+  max-height: none !important;
+}
+
+/* Specific styling for map container */
+.map-container {
+  height: 100vh;
+  width: 100%;
+}
+
+/* Fix for attribution control */
+.leaflet-control-attribution {
+  font-size: 10px;
+}
+
+/* Fix for zoom control */
+.leaflet-bar a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+} 
