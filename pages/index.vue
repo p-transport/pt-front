@@ -1,133 +1,217 @@
 <template>
-    <div>
-      <b-container fluid class="pl-0 pr-0">
-
-          <b-col sm="12" class="px-0">
-            <div id="map-wrap">
-                <client-only>
-                    <l-map :zoom="zoom" :minZoom="2" :center="center" :bounds="bounds" :options="{zoomControl: false, attributionControl: false, zoomSnap: 0.1}">
-                        <l-control-zoom position="topright"></l-control-zoom>
-
-                        <l-image-overlay url="https://publictransport.is/pt20240711_en.svg" :bounds="bounds" :center="center"></l-image-overlay>
-
-<!--                         <Lmarker v-for="lmarker in markers" :key="lmarker.id"
-                          :slug="lmarker.slug"
-                          :swlat="lmarker.coordinates.lat_coord"
-                          :swlng="lmarker.coordinates.long_coord"
-                          :nelat="lmarker.coordinates.lat_coord_ne"
-                          :nelng="lmarker.coordinates.long_coord_ne"
-                          :polygon="lmarker.polygon"
-                          :id="lmarker.id"
-                          :title="lmarker.title"
-                          :routes="lmarker.routes"
-                          :salesUrl="lmarker.sales_url"
-                        /> -->
-
-<!--                         <Lpolymarker v-for="lmarker in markers" :key="lmarker.id"
-                          :slug="lmarker.slug"
-                          :latlngs="lmarker.geojson.geometry.coordinates"
-                          :id="lmarker.id"
-                          :title="lmarker.title"
-                          :routes="lmarker.routes"
-                          :salesUrl="lmarker.sales_url"                        
-                        /> -->
-
-                        <lpolymarker v-for="lmarker in markers" :key="lmarker.id"
-                          :id="lmarker.id"
-                          :slug="lmarker.slug"
-                          :title="lmarker.title"
-                          :routes="lmarker.routes"
-                          :salesUrl="lmarker.sales_url"
-                          :geojson="parsedGeoJson(lmarker.geojson)"
-                        >
-                        </lpolymarker>
-
-
-                        
-                        <l-control-attribution position="bottomright" prefix="&copy; 2023 Cartography: Hugarflug ehf / Ingi Gunnar Jóhannsson. Published by <a href='https://www.hjolafaerni.is'>Hjólafærni á Íslandi</a> – All rights reserved" >
-                        Gl
-                        </l-control-attribution>
-                    </l-map>
-                </client-only>
-            </div>    
-          </b-col>
-
-
-      </b-container>
-
+  <div class="map-container">
+    <LeafletMap v-slot="{ components }">
+      <template v-if="components && components.LMap">
+        <component :is="components.LMap" 
+                  ref="map"
+                  :zoom="zoom" 
+                  :center="center" 
+                  :bounds="bounds" 
+                  :use-global-leaflet="true"
+                  :options="mapOptions"
+                  @ready="onMapReady">
+          <!-- Replace tile layer with SVG image overlay -->
+          <component :is="components.LImageOverlay"
+                     url="/pt20240711_en.svg" 
+                     :bounds="bounds"
+                     :opacity="1"
+                     layer-type="base"
+                     name="Public Transport Map" />
+                     
+          <component :is="components.LControlZoom" position="topright" />
+          <component :is="components.LControlAttribution" 
+                      position="bottomright" 
+                      prefix="&copy; 2025 Cartography: Hugarflug ehf / Ingi Gunnar Jóhannsson. Published by <a href='https://www.hjolafaerni.is' target='_blank'>Hjólafærni á Íslandi</a> – All rights reserved" />
+          
+          <!-- Use the markers directly -->
+          <template v-for="(marker, index) in markers" :key="index">
+            <Lpolymarker
+              :title="marker.title"
+              :slug="marker.slug"
+              :geojson="parsedGeoJson(marker.geojson)"
+              :color="marker.color || '#ff0000'"
+              :opacity="debugMode ? 0.6 : 0"
+              :fillOpacity="debugMode ? 0.4 : 0"
+              :weight="marker.weight || 2"
+              :radius="marker.radius || 10"
+              :sales-url="marker.sales_url"
+              :debug-mode="debugMode"
+            />
+          </template>
+        </component>
+      </template>
+      <template v-else>
+        <div class="flex items-center justify-center h-full">
+          <div class="text-center">
+            <div class="text-xl font-semibold mb-2">Loading map components...</div>
+            <div class="animate-pulse bg-gray-200 rounded-full h-2.5 w-24 mx-auto"></div>
+          </div>
+        </div>
+      </template>
+    </LeafletMap>
+    
+    <!-- Debug mode indicator -->
+    <div v-if="debugMode" class="debug-indicator">
+      <div class="bg-red-600 text-white px-3 py-1 rounded shadow-lg text-sm">
+        Debug Mode Active
+      </div>
     </div>
-
+  </div>
 </template>
 
 <script>
-
+import { ref, onMounted, reactive, markRaw, computed } from 'vue'
 import axios from 'axios'
-import Lmarker from '~/components/Lmarker.vue'
 import Lpolymarker from '~/components/Lpolymarker.vue'
-import  VueAnalytics from 'vue-analytics'
+import LeafletMap from '~/components/LeafletMap.vue'
 
 export default {
-    data() {
-        return {
-        url: 'https://map.publictransport.is/2022/{z}/{x}/{y}.png',
-        zoom: 2,
-        center: [47.313220, -1.319482],
-        bounds: [[83.287664, -159.522857], 
-                [-44.391598, 149.762878]]
+  components: {
+    Lpolymarker,
+    LeafletMap
+  },
+  
+  setup() {
+    const map = ref(null)
+    const markers = ref([])
+    const debugMode = ref(false) // Default debug mode to false
+    
+    // Map settings adjusted for Iceland SVG
+    const zoom = ref(2.5)
+    const center = ref([47.313220, -1.319482])
+    
+    // Set bounds for Iceland SVG map - these should match your SVG bounds
+    const bounds = ref([
+      [83.287664, -159.522857], 
+      [-44.391598, 149.762878]
+    ])
+    
+    // Map options with explicit attribution and zoom control settings
+    const mapOptions = markRaw({
+      zoomControl: false, // We'll add this separately
+      attributionControl: false, // We'll add this separately
+      preferCanvas: false, // SVG renderer works better with imageOverlay
+      zoomSnap: 0.1,
+      maxZoom: 10,
+      minZoom: 0
+    })
+    
+    // Function to setup CRS.Simple when Leaflet is ready
+    function setupMapOptions(mapObject) {
+      if (mapObject && mapObject.leafletObject) {
+        // Set CRS to Simple after Leaflet is loaded
+        mapObject.leafletObject.options.crs = window.L.CRS.Simple
+        console.log('Set CRS to Simple')
+      }
+    }
+
+    // Function to parse GeoJSON safely
+    function parsedGeoJson(geoJson) {
+      if (!geoJson) return null
+      
+      try {
+        // If it's already an object, return it
+        if (typeof geoJson === 'object') return geoJson
+        
+        // If it's a string, try to parse it
+        if (typeof geoJson === 'string') {
+          return JSON.parse(geoJson)
         }
-    },
-    async asyncData () {
-      const {data} = await axios.get('https://wp.publictransport.is/wp-json/pt/v1/markers');
-      return {markers:data}
-    },
-    methods: {
-      gaEvent: function(cat,act,lab) {
-        this.$ga.event({
-          eventCategory: cat,
-          eventAction: act,
-          eventLabel: lab,
-        });
-      },
-      parsedGeoJson: function (geojson) {
-        if (geojson) {
-          return JSON.parse(geojson)
+        
+        return null
+      } catch (error) {
+        console.error('Error parsing GeoJSON:', error)
+        return null
+      }
+    }
+
+    async function fetchMarkers() {
+      try {
+        const response = await fetch('https://wp.publictransport.is/wp-json/pt/v1/markers')
+        const data = await response.json()
+        markers.value = data
+        console.log(`Fetched ${data.length} markers`)
+      } catch (error) {
+        console.error('Error fetching markers:', error)
+      }
+    }
+
+    function onMapReady(mapObject) {
+      console.log('Map is ready')
+      map.value = mapObject
+      
+      // You can interact with the map object here if needed
+      if (mapObject && mapObject.leafletObject) {
+        // Configure map settings including CRS
+        setupMapOptions(mapObject)
+        
+        // Set bounds
+        mapObject.leafletObject.setMaxBounds(bounds.value)
+        
+        // Force a redraw of the map after a short delay
+        setTimeout(() => {
+          mapObject.leafletObject.invalidateSize()
+        }, 200)
+      }
+    }
+
+    onMounted(async () => {
+      console.log('Index page mounted')
+      
+      // Check for debug parameter in URL
+      if (typeof window !== 'undefined') {
+        const urlParams = new URLSearchParams(window.location.search)
+        const debugParam = urlParams.get('debug')
+        debugMode.value = debugParam === 'true' || debugParam === '1'
+        
+        if (debugMode.value) {
+          console.log('Debug mode enabled for map regions')
         }
       }
-    },
-    computed: {
-    },
-    components: {
-      Lmarker,
-      Lpolymarker
-    }
-}
+      
+      // Fetch markers after component is mounted
+      await fetchMarkers()
+      
+      // Trigger resize event to ensure map renders correctly after a delay
+      setTimeout(() => {
+        if (typeof window !== 'undefined' && window.dispatchEvent) {
+          window.dispatchEvent(new Event('resize'))
+        }
+      }, 500)
+    })
 
+    return {
+      map,
+      markers,
+      zoom,
+      center,
+      bounds,
+      mapOptions,
+      debugMode,
+      parsedGeoJson,
+      onMapReady
+    }
+  }
+}
 </script>
 
-<style lang="scss">
-  * {
-    font-family: Inter, sans-serif;
-    box-sizing: border-box;
-  }
+<style>
+.map-container {
+  position: absolute;
+  top: 52px; /* Adjusted from 56px to remove the gap */
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: calc(100vh - 52px); /* Adjusted to match the top value */
+  z-index: 5; /* Increased slightly but still lower than navbar (50) and mobile menu (100) */
+  margin-top: 0;
+}
 
-  #map-wrap {
-    height: 100vh;
-    overflow: hidden;
-  }
-  .leaflet-container.leaflet-container {
-    background-color: #E3E3E3;
-  }
-
-  .leaflet-top.leaflet-top {
-    top: 56px;
-  }
-
-  .provider-color {
-    width: 20%;
-    height: 3px;
-    background-color: #009de0;
-    display: block;
-    border-radius: 1.5px;
-  }
-
+.debug-indicator {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+}
 </style>
