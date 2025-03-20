@@ -7,8 +7,8 @@
         </div>
         <div class="hidden md:flex space-x-6">
           <!-- Navigation links -->
-          <a href="/" class="text-white hover:text-white hover:underline">Map</a>
-          <a href="https://wp.publictransport.is" target="_blank" class="text-white hover:text-white hover:underline">About</a>
+          <a href="/about" class="text-white hover:text-white hover:underline">About</a>
+          <a href="/howtouse" class="text-white hover:text-white hover:underline">How to use</a>
           
           <!-- Info link from API -->
           <a v-if="infoLink" :href="infoLink.link_url" target="_blank" class="text-white hover:text-white hover:underline">
@@ -52,7 +52,8 @@
       <div class="container-fluid px-4 py-2">
         <div class="flex flex-col space-y-3">
           <a href="/" class="block py-2 text-white hover:text-white hover:underline">Map</a>
-          <a href="https://wp.publictransport.is" target="_blank" class="block py-2 text-white hover:text-white hover:underline">About</a>
+          <a href="/about" class="block py-2 text-white hover:text-white hover:underline">About</a>
+          <a href="/howtouse" class="block py-2 text-white hover:text-white hover:underline">How to use</a>
           
           <!-- Info link in mobile menu -->
           <a v-if="infoLink" :href="infoLink.link_url" target="_blank" class="block py-2 text-white hover:text-white hover:underline">
