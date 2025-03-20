@@ -1,36 +1,38 @@
 <template>
-  <nav class="fixed top-0 left-0 right-0 bg-white bg-opacity-90 shadow-md z-50">
-    <div class="container mx-auto px-4 py-3">
+  <nav class="fixed top-0 left-0 right-0 bg-[#a10b0b] z-50">
+    <div class="container-fluid px-4 py-3">
       <div class="flex justify-between items-center">
         <div class="flex items-center">
-          <a href="/" class="text-xl font-bold text-blue-600">PublicTransport.is</a>
+          <a href="/" class="text-xl font-bold text-white">PublicTransport.is</a>
         </div>
         <div class="hidden md:flex space-x-6">
-          <!-- Add info link from API -->
-          <a v-if="infoLink" :href="infoLink.link_url" target="_blank" class="text-gray-700 hover:text-blue-600">
+          <!-- Navigation links -->
+          <a href="/" class="text-white hover:text-white hover:underline">Map</a>
+          <a href="https://wp.publictransport.is" target="_blank" class="text-white hover:text-white hover:underline">About</a>
+          
+          <!-- Info link from API -->
+          <a v-if="infoLink" :href="infoLink.link_url" target="_blank" class="text-white hover:text-white hover:underline">
             {{ infoLink.link_title }}
           </a>
-          <a href="https://wp.publictransport.is" target="_blank" class="text-gray-700 hover:text-blue-600">About</a>
-
           
           <!-- Dropdown for PDF links -->
           <div class="relative" v-if="links.length > 0">
             <button 
               @click="dropdownOpen = !dropdownOpen" 
               @blur="closeDropdownSoon"
-              class="text-gray-700 hover:text-blue-600 flex items-center"
+              class="text-white hover:text-white hover:underline flex items-center"
             >
               {{ linksTitle }}
-              <span class="material-icons text-sm ml-1">{{ dropdownOpen ? 'arrow_drop_up' : 'arrow_drop_down' }}</span>
+              <span class="material-icons text-sm ml-1 text-white">{{ dropdownOpen ? 'arrow_drop_up' : 'arrow_drop_down' }}</span>
             </button>
             
-            <div v-if="dropdownOpen" class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10">
+            <div v-if="dropdownOpen" class="absolute right-0 mt-2 w-48 bg-white rounded-md py-1 z-10">
               <a 
                 v-for="(link, index) in links" 
                 :key="index" 
                 :href="link.file" 
                 target="_blank"
-                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                class="block px-4 py-2 text-sm text-[#a10b0b] hover:bg-gray-100"
               >
                 {{ link.link_title }}
               </a>
@@ -38,7 +40,7 @@
           </div>
         </div>
         <div class="md:hidden">
-          <button @click="mobileMenuOpen = !mobileMenuOpen" class="text-gray-700 focus:outline-none">
+          <button @click="mobileMenuOpen = !mobileMenuOpen" class="text-white focus:outline-none">
             <span class="material-icons">{{ mobileMenuOpen ? 'close' : 'menu' }}</span>
           </button>
         </div>
@@ -46,20 +48,19 @@
     </div>
     
     <!-- Mobile menu -->
-    <div v-if="mobileMenuOpen" class="md:hidden bg-white bg-opacity-90 border-t">
-      <div class="container mx-auto px-4 py-2">
+    <div v-if="mobileMenuOpen" class="md:hidden bg-[#a10b0b] border-t border-white border-opacity-20">
+      <div class="container-fluid px-4 py-2">
         <div class="flex flex-col space-y-3">
-          <a href="/" class="block py-2 text-gray-700 hover:text-blue-600">Map</a>
-          <a href="https://wp.publictransport.is" target="_blank" class="block py-2 text-gray-700 hover:text-blue-600">About</a>
-          <a href="https://wp.publictransport.is/wp-content/uploads/latest_en.pdf" target="_blank" class="block py-2 text-gray-700 hover:text-blue-600">Timetables</a>
+          <a href="/" class="block py-2 text-white hover:text-white hover:underline">Map</a>
+          <a href="https://wp.publictransport.is" target="_blank" class="block py-2 text-white hover:text-white hover:underline">About</a>
           
           <!-- Info link in mobile menu -->
-          <a v-if="infoLink" :href="infoLink.link_url" target="_blank" class="block py-2 text-gray-700 hover:text-blue-600">
+          <a v-if="infoLink" :href="infoLink.link_url" target="_blank" class="block py-2 text-white hover:text-white hover:underline">
             {{ infoLink.link_title }}
           </a>
           
           <!-- PDF links section header -->
-          <div v-if="links.length > 0" class="pt-1 pb-1 text-gray-500 text-sm font-semibold">
+          <div v-if="links.length > 0" class="pt-1 pb-1 text-white text-sm font-semibold">
             {{ linksTitle }}
           </div>
           
@@ -69,7 +70,7 @@
             :key="index" 
             :href="link.file" 
             target="_blank"
-            class="block py-2 pl-3 text-gray-700 hover:text-blue-600 border-l-2 border-gray-200"
+            class="block py-2 pl-3 text-white hover:text-white hover:underline border-l-2 border-white border-opacity-40"
           >
             {{ link.link_title }}
           </a>
@@ -143,4 +144,12 @@ export default {
     }
   }
 }
-</script> 
+</script>
+
+<style>
+.container-fluid {
+  width: 100%;
+  margin-right: auto;
+  margin-left: auto;
+}
+</style> 
