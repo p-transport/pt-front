@@ -28,7 +28,7 @@
           <!-- Using a custom modal in Tailwind instead of b-modal -->
           <Teleport to="body">
             <div v-if="modalShow" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50" @click.self="modalShow = false">
-              <div class="relative w-full max-w-4xl bg-white rounded-lg shadow-xl flex flex-col max-h-[90vh] min-h-[50vh]">
+              <div class="relative w-full max-w-4xl bg-white rounded-lg shadow-xl flex flex-col max-h-[90vh] min-h-[20vh]">
                 <!-- Modal header -->
                 <div class="p-4 border-b shrink-0">
                   <div class="hgroup">
