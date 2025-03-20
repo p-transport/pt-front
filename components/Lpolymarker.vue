@@ -180,7 +180,11 @@ export default {
       type: Number,
       default: 0.2
     }, 
-    salesUrl: String
+    salesUrl: String,
+    debugMode: {
+      type: Boolean,
+      default: false
+    }
   },
   
   setup(props) {
@@ -361,9 +365,9 @@ export default {
         return {
           weight: props.weight || 2,
           color: props.color || "#ECEFF1",
-          opacity: props.opacity || 0.8,
+          opacity: props.debugMode ? (props.opacity || 0.8) : 0,
           fillColor: props.color || "#0000ff",
-          fillOpacity: props.fillOpacity || 0.5
+          fillOpacity: props.debugMode ? (props.fillOpacity || 0.5) : 0
         }
       })
     })

@@ -30,11 +30,12 @@
               :slug="marker.slug"
               :geojson="parsedGeoJson(marker.geojson)"
               :color="marker.color || '#ff0000'"
-              :opacity="0.6"
-              :fillOpacity="0.4"
+              :opacity="debugMode ? 0.6 : 0"
+              :fillOpacity="debugMode ? 0.4 : 0"
               :weight="marker.weight || 2"
               :radius="marker.radius || 10"
               :sales-url="marker.url"
+              :debug-mode="debugMode"
             />
           </template>
         </component>
@@ -48,6 +49,13 @@
         </div>
       </template>
     </LeafletMap>
+    
+    <!-- Debug mode indicator -->
+    <div v-if="debugMode" class="debug-indicator">
+      <div class="bg-red-600 text-white px-3 py-1 rounded shadow-lg text-sm">
+        Debug Mode Active
+      </div>
+    </div>
   </div>
 </template>
 
@@ -66,7 +74,7 @@ export default {
   setup() {
     const map = ref(null)
     const markers = ref([])
-    const debugMode = ref(false) // Disable debug mode
+    const debugMode = ref(false) // Default debug mode to false
     
     // Map settings adjusted for Iceland SVG
     const zoom = ref(2.5)
@@ -149,6 +157,18 @@ export default {
 
     onMounted(async () => {
       console.log('Index page mounted')
+      
+      // Check for debug parameter in URL
+      if (typeof window !== 'undefined') {
+        const urlParams = new URLSearchParams(window.location.search)
+        const debugParam = urlParams.get('debug')
+        debugMode.value = debugParam === 'true' || debugParam === '1'
+        
+        if (debugMode.value) {
+          console.log('Debug mode enabled for map regions')
+        }
+      }
+      
       // Fetch markers after component is mounted
       await fetchMarkers()
       
@@ -185,5 +205,12 @@ export default {
   right: 0;
   bottom: 0;
   z-index: 1; /* Ensure it's below the navbar */
+}
+
+.debug-indicator {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
 }
 </style>
