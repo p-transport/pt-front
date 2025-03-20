@@ -1,9 +1,11 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+import { defineNuxtConfig } from 'nuxt/config'
+
 export default defineNuxtConfig({
   devtools: { enabled: true },
 
   // Setting SPA mode, equivalent to mode: 'spa' in Nuxt 2
-  ssr: false,
+  // ssr: false,
 
   app: {
     head: {
