@@ -5,7 +5,7 @@
         <div class="grid grid-cols-1 gap-8">
           <div>
             <h1 class="text-3xl font-bold mb-6">How to use</h1>
-            <div class="prose max-w-none" v-html="results.rendered"></div>
+            <div class="prose prose-lg max-w-none" v-html="results.rendered"></div>
           </div>
         </div>
       </div>

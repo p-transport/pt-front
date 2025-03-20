@@ -233,7 +233,8 @@ export default {
 <style>
 /* Ensure the Leaflet map container takes full height */
 #leaflet-container {
-  min-height: 400px;
+  min-height: calc(100vh - 52px);
+  height: 100%;
 }
 
 /* Fix the Leaflet default icon paths issue */

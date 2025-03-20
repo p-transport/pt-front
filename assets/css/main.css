@@ -81,3 +81,36 @@
   margin-bottom: 16px;
   border-bottom: 1px solid #dee2e6;
 }
+
+/* Content page styling */
+.prose p {
+  margin-bottom: 1.25em;
+}
+
+.prose a {
+  color: #a10b0b;
+  text-decoration: none;
+  font-weight: 500;
+  border-bottom: 1px solid rgba(161, 11, 11, 0.3);
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.prose a:hover {
+  color: #d01515;
+  border-bottom-color: rgba(208, 21, 21, 0.6);
+}
+
+.prose ul li,
+.prose ol li {
+  margin-bottom: 0.5em;
+}
+
+.prose h2 {
+  margin-top: 1.75em;
+  margin-bottom: 0.75em;
+}
+
+.prose h3 {
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+}

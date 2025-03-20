@@ -21,7 +21,7 @@
           <component :is="components.LControlZoom" position="topright" />
           <component :is="components.LControlAttribution" 
                       position="bottomright" 
-                      prefix="&copy; 2023 Cartography: Hugarflug ehf / Ingi Gunnar Jóhannsson. Published by <a href='https://www.hjolafaerni.is'>Hjólafærni á Íslandi</a> – All rights reserved" />
+                      prefix="&copy; 2025 Cartography: Hugarflug ehf / Ingi Gunnar Jóhannsson. Published by <a href='https://www.hjolafaerni.is' target='_blank'>Hjólafærni á Íslandi</a> – All rights reserved" />
           
           <!-- Use the markers directly -->
           <template v-for="(marker, index) in markers" :key="index">
@@ -197,14 +197,15 @@ export default {
 
 <style>
 .map-container {
-  height: 100vh; /* Full viewport height */
-  width: 100%;
-  position: absolute; /* Position absolutely to go behind navbar */
-  top: 0;
+  position: absolute;
+  top: 52px; /* Adjusted from 56px to remove the gap */
   left: 0;
   right: 0;
   bottom: 0;
-  z-index: 1; /* Ensure it's below the navbar */
+  width: 100%;
+  height: calc(100vh - 52px); /* Adjusted to match the top value */
+  z-index: 5; /* Increased slightly but still lower than navbar (50) and mobile menu (100) */
+  margin-top: 0;
 }
 
 .debug-indicator {

@@ -1,9 +1,7 @@
 <template>
-  <div class="min-h-screen relative">
+  <div class="min-h-screen">
     <Navbar />
-    
-    <!-- Remove padding to allow map to go full height -->
-    <main class="h-full">
+    <main class="m-0 p-0">
       <slot />
     </main>
   </div>
@@ -26,6 +24,11 @@ export default {
 }
 
 /* Global styles */
+body, html {
+  margin: 0;
+  padding: 0;
+}
+
 .text-primary {
   color: var(--primary);
 }

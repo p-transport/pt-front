@@ -1,17 +1,17 @@
 <template>
-  <nav class="fixed top-0 left-0 right-0 bg-[#a10b0b] z-50">
-    <div class="container-fluid px-4 py-3">
+  <nav :class="['bg-[#a10b0b] z-50 border-b-0', { 'fixed top-0 left-0 right-0': mobileMenuOpen }]">
+    <div class="container-fluid px-4 py-3 mb-0">
       <div class="flex justify-between items-center">
         <div class="flex items-center">
           <a href="/" class="text-xl font-bold text-white">PublicTransport.is</a>
         </div>
         <div class="hidden md:flex space-x-6">
           <!-- Navigation links -->
-          <a href="/about" class="text-white hover:text-white hover:underline">About</a>
-          <a href="/howtouse" class="text-white hover:text-white hover:underline">How to use</a>
+          <a href="/about" class="nav-link">About</a>
+          <a href="/howtouse" class="nav-link">How to use</a>
           
           <!-- Info link from API -->
-          <a v-if="infoLink" :href="infoLink.link_url" target="_blank" class="text-white hover:text-white hover:underline">
+          <a v-if="infoLink" :href="infoLink.link_url" target="_blank" class="nav-link">
             {{ infoLink.link_title }}
           </a>
           
@@ -20,13 +20,13 @@
             <button 
               @click="dropdownOpen = !dropdownOpen" 
               @blur="closeDropdownSoon"
-              class="text-white hover:text-white hover:underline flex items-center"
+              class="nav-link-btn flex items-center"
             >
               {{ linksTitle }}
               <span class="material-icons text-sm ml-1 text-white">{{ dropdownOpen ? 'arrow_drop_up' : 'arrow_drop_down' }}</span>
             </button>
             
-            <div v-if="dropdownOpen" class="absolute right-0 mt-2 w-48 bg-white rounded-md py-1 z-10">
+            <div v-if="dropdownOpen" class="absolute right-0 mt-2 w-48 bg-white rounded-md py-1 z-[60]">
               <a 
                 v-for="(link, index) in links" 
                 :key="index" 
@@ -48,15 +48,15 @@
     </div>
     
     <!-- Mobile menu -->
-    <div v-if="mobileMenuOpen" class="md:hidden bg-[#a10b0b] border-t border-white border-opacity-20">
+    <div v-if="mobileMenuOpen" class="md:hidden bg-[#a10b0b] border-t border-white border-opacity-20 relative z-[100]">
       <div class="container-fluid px-4 py-2">
         <div class="flex flex-col space-y-3">
-          <a href="/" class="block py-2 text-white hover:text-white hover:underline">Map</a>
-          <a href="/about" class="block py-2 text-white hover:text-white hover:underline">About</a>
-          <a href="/howtouse" class="block py-2 text-white hover:text-white hover:underline">How to use</a>
+          <a href="/" class="mobile-nav-link">Map</a>
+          <a href="/about" class="mobile-nav-link">About</a>
+          <a href="/howtouse" class="mobile-nav-link">How to use</a>
           
           <!-- Info link in mobile menu -->
-          <a v-if="infoLink" :href="infoLink.link_url" target="_blank" class="block py-2 text-white hover:text-white hover:underline">
+          <a v-if="infoLink" :href="infoLink.link_url" target="_blank" class="mobile-nav-link">
             {{ infoLink.link_title }}
           </a>
           
@@ -71,7 +71,7 @@
             :key="index" 
             :href="link.file" 
             target="_blank"
-            class="block py-2 pl-3 text-white hover:text-white hover:underline border-l-2 border-white border-opacity-40"
+            class="mobile-nav-link pl-3 border-l-2 border-white border-opacity-40"
           >
             {{ link.link_title }}
           </a>
@@ -152,5 +152,66 @@ export default {
   width: 100%;
   margin-right: auto;
   margin-left: auto;
+}
+
+/* Handle mobile menu z-index and overlay */
+@media (max-width: 767px) {
+  nav.fixed + .mobile-menu-open {
+    padding-top: 50px;
+    position: relative;
+    z-index: 99;
+  }
+}
+
+/* Modern animated nav links for desktop */
+.nav-link, .nav-link-btn {
+  position: relative;
+  color: white;
+  text-decoration: none;
+  padding-bottom: 2px;
+  transition: color 0.3s ease;
+}
+
+.nav-link::after, .nav-link-btn::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 1px;
+  bottom: -2px;
+  left: 0;
+  background-color: white;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.nav-link:hover::after, .nav-link-btn:hover::after {
+  opacity: 1;
+}
+
+/* Mobile nav links with animated line effect */
+.mobile-nav-link {
+  position: relative;
+  display: block;
+  padding: 0.5rem 0;
+  color: white;
+  text-decoration: none;
+  transition: color 0.3s ease;
+  overflow: hidden;
+}
+
+.mobile-nav-link::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 1px;
+  bottom: 0;
+  left: 0;
+  background-color: white;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.mobile-nav-link:hover::after {
+  opacity: 1;
 }
 </style> 
