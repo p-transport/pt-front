@@ -50,6 +50,11 @@
       </template>
     </LeafletMap>
     
+    <!-- Floating Ad Banner -->
+    <div class="floating-ad-container">
+      <AdBanner :size="adBannerSize" />
+    </div>
+    
     <!-- Debug mode indicator -->
     <div v-if="debugMode" class="debug-indicator">
       <div class="bg-red-600 text-white px-3 py-1 rounded shadow-lg text-sm">
@@ -60,21 +65,24 @@
 </template>
 
 <script>
-import { ref, onMounted, reactive, markRaw, computed } from 'vue'
+import { ref, onMounted, reactive, markRaw, computed, onUnmounted } from 'vue'
 import axios from 'axios'
 import Lpolymarker from '~/components/Lpolymarker.vue'
 import LeafletMap from '~/components/LeafletMap.vue'
+import AdBanner from '~/components/AdBanner.vue'
 
 export default {
   components: {
     Lpolymarker,
-    LeafletMap
+    LeafletMap,
+    AdBanner
   },
   
   setup() {
     const map = ref(null)
     const markers = ref([])
     const debugMode = ref(false) // Default debug mode to false
+    const windowWidth = ref(0) // Track window width for responsive design
     
     // Map settings adjusted for Iceland SVG
     const zoom = ref(2.5)
@@ -155,8 +163,27 @@ export default {
       }
     }
 
+    // Compute the appropriate ad banner size based on window width
+    const adBannerSize = computed(() => {
+      if (windowWidth.value >= 768) {
+        return 'leaderboard' // Desktop size
+      } else if (windowWidth.value >= 480) {
+        return 'large-mobile' // Tablet size
+      } else {
+        return 'medium-rectangle' // Mobile size - more visible on small screens
+      }
+    })
+
     onMounted(async () => {
       console.log('Index page mounted')
+      
+      // Set initial window width
+      if (typeof window !== 'undefined') {
+        windowWidth.value = window.innerWidth
+        
+        // Add resize listener for responsive design
+        window.addEventListener('resize', handleResize)
+      }
       
       // Check for debug parameter in URL
       if (typeof window !== 'undefined') {
@@ -179,6 +206,18 @@ export default {
         }
       }, 500)
     })
+    
+    // Handle window resize
+    const handleResize = () => {
+      windowWidth.value = window.innerWidth
+    }
+    
+    // Clean up event listener on unmount
+    onUnmounted(() => {
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('resize', handleResize)
+      }
+    })
 
     return {
       map,
@@ -189,7 +228,8 @@ export default {
       mapOptions,
       debugMode,
       parsedGeoJson,
-      onMapReady
+      onMapReady,
+      adBannerSize
     }
   }
 }
@@ -201,17 +241,54 @@ export default {
   top: 52px; /* Adjusted from 56px to remove the gap */
   left: 0;
   right: 0;
-  bottom: 0;
+  bottom: 0; /* Extend to bottom of the screen */
   width: 100%;
-  height: calc(100vh - 52px); /* Adjusted to match the top value */
-  z-index: 5; /* Increased slightly but still lower than navbar (50) and mobile menu (100) */
+  height: calc(100vh - 52px); /* Full height minus navbar */
+  z-index: 5; /* Lower than navbar (50) */
   margin-top: 0;
+}
+
+@media (max-width: 768px) {
+  .map-container {
+    /* Full height on mobile */
+    bottom: env(safe-area-inset-bottom, 0px); /* Only account for iOS safe area */
+    height: calc(100vh - 52px - env(safe-area-inset-bottom, 0px));
+  }
 }
 
 .debug-indicator {
   position: fixed;
-  bottom: 20px;
+  top: 70px; /* Move to top right instead of bottom right */
   right: 20px;
   z-index: 1000;
+}
+
+/* Floating Ad Banner styles */
+.floating-ad-container {
+  position: fixed;
+  bottom: 30px; /* Position from bottom */
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 900; /* Above map but below controls */
+  width: auto;
+  max-width: 100%;
+  padding: 0 10px;
+  box-sizing: border-box;
+  pointer-events: auto; /* Allow clicking on the ad */
+}
+
+/* Responsive styles for ad container */
+@media (max-width: 768px) {
+  .floating-ad-container {
+    bottom: calc(40px + env(safe-area-inset-bottom, 0px)); /* Adjust for iOS safe area */
+  }
+}
+
+@media (max-width: 480px) {
+  .floating-ad-container {
+    /* Switch to mobile banner size on very small screens */
+    width: 100%;
+    padding: 0 5px;
+  }
 }
 </style>

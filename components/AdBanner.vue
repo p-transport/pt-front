@@ -1,6 +1,9 @@
 <template>
-  <div class="ad-banner-container">
+  <div v-if="!dismissed" class="ad-banner-container">
     <div class="ad-banner" :class="sizeClass">
+      <div class="dismiss-button" @click="dismissAd">
+        <span>&times;</span>
+      </div>
       <div v-if="!adLoaded" class="ad-placeholder">
         <span>Advertisement</span>
       </div>
@@ -25,6 +28,7 @@ export default {
   data() {
     return {
       adLoaded: false, // Would be set to true when ad content is loaded
+      dismissed: false, // Track if the ad has been dismissed
       adSizes: {
         // Standard IAB ad sizes
         leaderboard: { width: 728, height: 90 }, // Desktop leaderboard
@@ -40,6 +44,13 @@ export default {
       return `ad-size-${this.size}`;
     }
   },
+  methods: {
+    dismissAd() {
+      this.dismissed = true;
+      // Could store this in localStorage to remember user preference
+      // localStorage.setItem('adDismissed', 'true');
+    }
+  },
   mounted() {
     console.log('AdBanner mounted with size:', this.size);
     
@@ -51,32 +62,56 @@ export default {
     // setTimeout(() => {
     //   this.adLoaded = true;
     // }, 1000);
+    
+    // Check if the ad was previously dismissed
+    // const wasDismissed = localStorage.getItem('adDismissed') === 'true';
+    // this.dismissed = wasDismissed;
   }
 }
 </script>
 
 <style scoped>
 .ad-banner-container {
-  width: 100%;
   display: flex;
   justify-content: center;
-  padding: 15px 0;
-  background-color: #f0f0f0;
-  border-top: 2px solid #cccccc;
-  margin-top: auto; /* Push to bottom */
-  position: relative; /* Ensure it's in the document flow */
-  z-index: 10; /* Make sure it's above other elements */
+  padding: 0;
+  margin: 0;
+  width: auto; /* Let the ad determine its own width */
+  position: relative;
 }
 
 .ad-banner {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #e0e0e0;
-  border: 2px solid #bbbbbb;
-  border-radius: 4px;
+  background-color: rgba(255, 255, 255, 0.95);
+  border: 1px solid #bbbbbb;
   overflow: hidden;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  position: relative;
+}
+
+.dismiss-button {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 20px;
+  height: 20px;
+  background-color: rgba(0, 0, 0, 0.2);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  cursor: pointer;
+  z-index: 2;
+  transition: background-color 0.2s;
+}
+
+.dismiss-button:hover {
+  background-color: rgba(0, 0, 0, 0.4);
 }
 
 .ad-placeholder {
