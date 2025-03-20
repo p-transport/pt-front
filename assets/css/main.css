@@ -81,9 +81,3 @@
   margin-bottom: 16px;
   border-bottom: 1px solid #dee2e6;
 }
-
-.route:last-of-type {
-  padding-bottom: 0;
-  margin-bottom: 0;
-  border-bottom: none;
-} 

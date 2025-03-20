@@ -39,7 +39,8 @@ export default defineNuxtConfig({
   // Nuxt.js Runtime Config
   runtimeConfig: {
     public: {
-      apiBaseUrl: 'https://wp.publictransport.is/wp-json'
+      apiBaseUrl: 'https://wp.publictransport.is/wp-json',
+      googleAnalyticsMeasurementId: process.env.GOOGLE_ANALYTICS_ID || 'G-XXXXXXXXXX' // Replace with actual ID when available
     }
   },
 

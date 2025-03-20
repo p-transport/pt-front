@@ -28,9 +28,9 @@
           <!-- Using a custom modal in Tailwind instead of b-modal -->
           <Teleport to="body">
             <div v-if="modalShow" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50" @click.self="modalShow = false">
-              <div class="relative w-full max-w-4xl bg-white rounded-lg shadow-xl max-h-[90vh] overflow-auto">
+              <div class="relative w-full max-w-4xl bg-white rounded-lg shadow-xl flex flex-col max-h-[90vh] min-h-[50vh]">
                 <!-- Modal header -->
-                <div class="p-4 border-b">
+                <div class="p-4 border-b shrink-0">
                   <div class="hgroup">
                     <div class="ptitle text-gray-600">Transport to and from</div>
                     <h1 class="text-2xl font-bold">{{ title }}</h1>
@@ -40,8 +40,8 @@
                   </button>
                 </div>
 
-                <!-- Modal body -->
-                <div class="p-6">
+                <!-- Modal body - now scrollable -->
+                <div class="p-6 overflow-y-auto flex-grow">
                   <section>
                     <div v-for="routes in results" :key="routes.id">
                       <div v-for="route in routes" :key="route.id" class="route">
@@ -62,7 +62,7 @@
                                   <h2 class="routename">
                                     <template v-if="route.provider_status === 'partner' && route.sales_url">
                                       <a :href="route.sales_url" 
-                                         @click="markerClick('Sales link','Route name',route.number + ' ' + route.sales_url)" 
+                                         @click="trackSalesClick('Route name', route.number, route.sales_url)" 
                                          target="_blank" 
                                          class="hover:text-primary">
                                         {{ route.destinations.start_point }} - {{ route.destinations.end_point }}
@@ -71,7 +71,7 @@
                                     </template>
                                     <template v-else-if="route.provider_status === 'partner' || route.provider_url">
                                       <a :href="route.provider_url" 
-                                         @click="markerClick('Route link','Route name',route.provider_url)" 
+                                         @click="trackSalesClick('Provider link', route.provider_title, route.provider_url)" 
                                          target="_blank"
                                          class="hover:text-primary">
                                         {{ route.destinations.start_point }} - {{ route.destinations.end_point }}
@@ -97,7 +97,7 @@
                             </div>
                             <div class="mt-3 sm:mt-0">
                               <a v-if="route.sales_url"
-                                 @click="markerClick('Sales link','Book now',route.sales_url)"
+                                 @click="trackSalesClick('Book now', route.number, route.sales_url)"
                                  :href="route.sales_url"
                                  target="_blank"
                                  class="inline-block w-full sm:w-auto px-4 py-2 text-center border border-primary text-primary rounded hover:bg-primary hover:text-white transition-colors">
@@ -111,9 +111,9 @@
                   </section>
                 </div>
 
-                <!-- Modal footer -->
-                <div v-if="salesUrl" class="p-4 border-t">
-                  <a @click="markerClick('Sales link','Book tours in '+title,'')"
+                <!-- Modal footer - now fixed at bottom -->
+                <div v-if="salesUrl" class="p-4 border-t mt-auto shrink-0">
+                  <a @click="trackSalesClick('Main sales link', title, salesUrl)"
                      :href="salesUrl"
                      target="_blank"
                      class="block w-full py-3 text-center bg-primary text-white rounded font-bold hover:bg-blue-600 transition-colors">
@@ -130,6 +130,7 @@
 <script>
 import axios from 'axios'
 import { ref, computed, onMounted, watch, inject, shallowRef, markRaw } from 'vue'
+import { useNuxtApp } from '#app'
 
 export default {
   name: 'Lpolymarker',
@@ -356,7 +357,34 @@ export default {
 
     function markerClick(at, act, lab) {
       modalShow.value = !modalShow.value
-      // Analytics event tracking would go here
+      
+      // Get the $gtag function from the Nuxt instance
+      const { $gtag } = useNuxtApp()
+      
+      // Track marker click event
+      if ($gtag && modalShow.value) {
+        $gtag('marker_click', 'click', {
+          marker_title: props.title,
+          marker_id: props.id,
+          marker_slug: props.slug,
+          location: `${props.lat},${props.lng}`
+        })
+      }
+    }
+
+    function trackSalesClick(type, label, url) {
+      // Get the $gtag function from the Nuxt instance
+      const { $gtag } = useNuxtApp()
+      
+      // Track sales link click
+      if ($gtag) {
+        $gtag('sales_click', type, {
+          label: label,
+          url: url,
+          marker_title: props.title,
+          marker_id: props.id
+        })
+      }
     }
 
     // Use markRaw for the style function to prevent reactivity issues
@@ -381,7 +409,8 @@ export default {
       safeGeoJson,
       leafletLoaded,
       getLeafletComponent,
-      markerPosition
+      markerPosition,
+      trackSalesClick
     }
   },
   
