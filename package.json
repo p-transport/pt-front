@@ -9,8 +9,7 @@
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare",
-    "deploy": "nuxt generate && rsync -av --progress -e \"ssh -p 22\" .output/public/ \"user.name@example.com@your-server.com:/path/to/destination/\""
+    "postinstall": "nuxt prepare"
   },
   "dependencies": {
     "@vue-leaflet/vue-leaflet": "^0.10.1",

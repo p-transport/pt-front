@@ -3,8 +3,9 @@ export default defineNuxtPlugin((nuxtApp) => {
   const runtimeConfig = useRuntimeConfig()
   const measurementId = runtimeConfig.public.googleAnalyticsMeasurementId
 
-  // Only load on client-side and if a measurement ID is provided
-  if (process.client && measurementId) {
+  // Only load on client-side and if a valid measurement ID is provided
+  // Valid Google Analytics 4 IDs start with G- followed by alphanumeric characters
+  if (process.client && measurementId && /^G-[A-Z0-9]+$/i.test(measurementId) && measurementId !== 'G-877BES8YN8') {
     // Load the Google Analytics script
     function loadGoogleAnalytics() {
       const script = document.createElement('script')
@@ -43,6 +44,7 @@ export default defineNuxtPlugin((nuxtApp) => {
     // Provide a dummy function when GA is not loaded
     nuxtApp.provide('gtag', () => {
       // Do nothing in SSR or when no measurement ID is available
+      console.log('Google Analytics not loaded: Invalid or missing measurement ID')
     })
   }
 }) 
