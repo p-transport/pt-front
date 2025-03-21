@@ -45,7 +45,7 @@ export default {
         // Add viewport meta with viewport-fit=cover for iOS safe areas
         { 
           name: 'viewport', 
-          content: 'width=device-width, initial-scale=1, viewport-fit=cover'
+          content: 'width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1.0, user-scalable=no'
         }
       ]
     }
@@ -57,6 +57,8 @@ export default {
 :root {
   --primary: #0066cc;
   --primary-hover: #0052a3;
+  --safe-area-inset-top: env(safe-area-inset-top, 0px);
+  --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
 }
 
 /* Global styles */
@@ -64,6 +66,17 @@ body, html {
   margin: 0;
   padding: 0;
   height: 100%;
+  /* Prevent overscroll/bounce effect */
+  position: fixed;
+  overflow: hidden;
+  width: 100%;
+}
+
+/* Fix for iOS vh units */
+@supports (-webkit-touch-callout: none) {
+  .min-h-screen {
+    min-height: -webkit-fill-available;
+  }
 }
 
 .min-h-screen {

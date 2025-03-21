@@ -18,7 +18,20 @@
 /* Specific styling for map container */
 .map-container {
   height: 100vh;
+  height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+  /* Fallback for browsers that don't support env() */
+  height: -webkit-fill-available;
   width: 100%;
+  position: relative;
+}
+
+/* On iOS, ensure content is properly displayed */
+@supports (-webkit-touch-callout: none) {
+  .map-container {
+    /* iOS specific override */
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
 }
 
 /* Fix for attribution control */

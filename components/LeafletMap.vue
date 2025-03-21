@@ -234,7 +234,20 @@ export default {
 /* Ensure the Leaflet map container takes full height */
 #leaflet-container {
   min-height: calc(100vh - 52px);
+  min-height: calc(100vh - 52px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+  /* Fallback for browsers that don't support env() */
+  min-height: -webkit-fill-available;
   height: 100%;
+  position: relative;
+}
+
+/* iOS-specific fixes */
+@supports (-webkit-touch-callout: none) {
+  #leaflet-container {
+    /* Ensure content doesn't go under the URL bar */
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
 }
 
 /* Fix the Leaflet default icon paths issue */
