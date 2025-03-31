@@ -28,7 +28,7 @@
           <!-- Using a custom modal in Tailwind instead of b-modal -->
           <Teleport to="body">
             <div v-if="modalShow" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50" @click.self="modalShow = false">
-              <div class="relative w-full max-w-4xl bg-white rounded-lg shadow-xl flex flex-col max-h-[90vh] min-h-[20vh]">
+              <div class="modal relative w-full max-w-4xl bg-white rounded-lg shadow-xl flex flex-col max-h-[70vh] md:max-h-[90vh] min-h-[20vh] overflow-hidden">
                 <!-- Modal header -->
                 <div class="p-4 border-b shrink-0">
                   <div class="hgroup">
@@ -478,5 +478,51 @@ export default {
 .ptitle {
   font-size: 16px;
   text-transform: uppercase;
+}
+
+/* Modal mobile styles */
+@media (max-width: 640px) {
+  /* Optimize for mobile view */
+  .modal .routeinfo .routename {
+    font-size: 0.95rem;
+  }
+  
+  /* Smaller padding for modal content on mobile */
+  .modal .p-6 {
+    padding: 1rem;
+  }
+  
+  /* Make book now button more prominent on mobile */
+  .modal a.inline-block {
+    margin-top: 0.5rem;
+    width: 100%;
+    padding: 0.5rem;
+    text-align: center;
+  }
+  
+  /* Stack content in mobile view */
+  .modal .flex-col {
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+/* Styled scrollbar for the modal body */
+.overflow-y-auto::-webkit-scrollbar {
+  width: 6px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 3px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb:hover {
+  background: #555;
 }
 </style>
