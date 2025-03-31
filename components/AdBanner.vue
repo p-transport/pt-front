@@ -45,9 +45,6 @@ export default {
       // Could store this in localStorage to remember user preference
       // localStorage.setItem('adDismissed', 'true');
     }
-  },
-  mounted() {
-    console.log('AdBanner mounted with size:', this.size);
   }
 }
 </script>

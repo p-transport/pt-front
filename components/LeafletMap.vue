@@ -37,7 +37,7 @@ export default {
       return new Promise((resolve, reject) => {
         // Only load if not already loaded
         if (typeof window !== 'undefined' && !window.L) {
-          console.log('Loading Leaflet from CDN...')
+          // console.log('Loading Leaflet from CDN...')
           
           // Add Leaflet CSS
           const cssLink = document.createElement('link')
@@ -52,7 +52,7 @@ export default {
           script.crossOrigin = ''
           
           script.onload = () => {
-            console.log('Leaflet loaded from CDN successfully')
+            // console.log('Leaflet loaded from CDN successfully')
             resolve(window.L)
           }
           
@@ -69,7 +69,7 @@ export default {
           }, 10000)
         } else if (typeof window !== 'undefined' && window.L) {
           // Leaflet already loaded
-          console.log('Leaflet already loaded')
+          // console.log('Leaflet already loaded')
           resolve(window.L)
         } else {
           // Not in browser
@@ -80,7 +80,7 @@ export default {
     
     async function loadVueLeaflet() {
       try {
-        console.log('Loading vue-leaflet components...')
+        // console.log('Loading vue-leaflet components...')
         const vueLeaflet = await import('@vue-leaflet/vue-leaflet')
         
         // Only register components if we got them
@@ -115,7 +115,7 @@ export default {
             }
           }
           
-          console.log('Vue-Leaflet components loaded')
+          // console.log('Vue-Leaflet components loaded')
           return true
         }
         return false
@@ -126,11 +126,11 @@ export default {
     }
     
     onMounted(async () => {
-      console.log('LeafletMap mounted, loading Leaflet...')
+      // console.log('LeafletMap mounted, loading Leaflet...')
       
       // Skip if not running in browser
       if (typeof window === 'undefined') {
-        console.log('Not running in browser, skipping Leaflet load')
+        // console.log('Not running in browser, skipping Leaflet load')
         return
       }
       
@@ -154,11 +154,11 @@ export default {
         setTimeout(() => {
           if (window.dispatchEvent) {
             window.dispatchEvent(new Event('resize'))
-            console.log('Resize event dispatched')
+            // console.log('Resize event dispatched')
           }
         }, 300)
         
-        console.log('LeafletMap component fully initialized')
+        // console.log('LeafletMap component fully initialized')
       } catch (err) {
         console.error('Error loading Leaflet components:', err)
         error.value = 'Failed to load map components. Please try refreshing the page.'
