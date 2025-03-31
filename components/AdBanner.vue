@@ -1,15 +1,11 @@
 <template>
   <div v-if="!dismissed" class="ad-banner-container">
     <div class="ad-banner" :class="sizeClass">
-      <div class="dismiss-button" @click="dismissAd">
+      <a href="https://publictransport.tourdesk.is/Transportation/Transfer?searchParameter=%22airport%20direct%22%20%22flybus%22" target="_blank" rel="noopener noreferrer" class="ad-link-area">
+        <span class="ad-link-text">Book airport transfer</span>
+      </a>
+      <div class="dismiss-button" @click.stop="dismissAd">
         <span>&times;</span>
-      </div>
-      <div v-if="!adLoaded" class="ad-placeholder">
-        <span>Advertisement</span>
-      </div>
-      <div v-else class="ad-content">
-        <!-- Actual ad content will go here, this is just a placeholder -->
-        <slot></slot>
       </div>
     </div>
   </div>
@@ -27,7 +23,6 @@ export default {
   },
   data() {
     return {
-      adLoaded: false, // Would be set to true when ad content is loaded
       dismissed: false, // Track if the ad has been dismissed
       adSizes: {
         // Standard IAB ad sizes
@@ -53,19 +48,6 @@ export default {
   },
   mounted() {
     console.log('AdBanner mounted with size:', this.size);
-    
-    // For testing, let's always show the ad placeholder
-    this.adLoaded = false;
-    
-    // In a real implementation, you would integrate with an ad provider here
-    // Simulate ad loading with a timeout for real implementation
-    // setTimeout(() => {
-    //   this.adLoaded = true;
-    // }, 1000);
-    
-    // Check if the ad was previously dismissed
-    // const wasDismissed = localStorage.getItem('adDismissed') === 'true';
-    // this.dismissed = wasDismissed;
   }
 }
 </script>
@@ -82,47 +64,68 @@ export default {
 
 .ad-banner {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: rgba(255, 255, 255, 0.95);
-  border: 1px solid #bbbbbb;
+  /* Updated background: blue gradient */
+  background-image: linear-gradient(to bottom, #007bff, #0056b3);
+  border: 1px solid #0056b3; /* Adjusted border */
   overflow: hidden;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-  border-radius: 4px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  border-radius: 0px;
   position: relative;
+  text-align: center;
 }
 
 .dismiss-button {
   position: absolute;
-  top: 2px;
-  right: 2px;
-  width: 20px;
-  height: 20px;
-  background-color: rgba(0, 0, 0, 0.2);
-  color: white;
+  top: 4px;
+  right: 4px;
+  width: 22px; /* Slightly larger */
+  height: 22px;
+  background-color: rgba(255, 255, 255, 0.8); /* More opaque */
+  color: #0056b3; /* Blue color */
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 14px;
+  font-size: 16px; /* Larger icon */
+  font-weight: bold;
   cursor: pointer;
-  z-index: 2;
-  transition: background-color 0.2s;
+  z-index: 2; /* Ensure it's above the link area */
+  transition: background-color 0.2s, color 0.2s;
 }
 
 .dismiss-button:hover {
-  background-color: rgba(0, 0, 0, 0.4);
+  background-color: rgba(255, 255, 255, 1);
+  color: #003d80;
 }
 
-.ad-placeholder {
+.ad-link-area {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 100%;
-  height: 100%;
-  color: #555;
-  font-size: 1rem;
+  text-decoration: none;
+  z-index: 1; /* Below dismiss button */
+}
+
+.ad-link-text {
+  /* Style for the white strip effect, applied to the span */
+  background-color: #ffffff;
+  color: #0056b3; /* Blue text for contrast */
+  padding: 8px 20px; /* Padding to create the strip size */
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  
+  /* Font styling */
+  font-size: 1.2rem; 
   font-weight: bold;
+  transition: opacity 0.2s; /* Add transition to text */
+}
+
+.ad-link-area:hover .ad-link-text {
+  opacity: 0.85; /* Slight visual feedback on hover */
 }
 
 /* Standard ad sizes based on IAB standards */
@@ -154,15 +157,23 @@ export default {
 /* Responsive behavior */
 @media (max-width: 768px) {
   .ad-size-leaderboard {
-    width: 320px;
+    width: 320px; /* Adjust leaderboard to a common mobile banner size */
     height: 100px;
+  }
+  .ad-link-text {
+     font-size: 1rem; /* Adjust font size for smaller screens */
+     padding: 6px 15px; /* Adjust padding */
   }
 }
 
 @media (max-width: 320px) {
   .ad-size-leaderboard, .ad-size-large-mobile {
-    width: 300px;
+    width: 300px; /* Adjust for very small screens */
     height: 100px;
+  }
+   .ad-link-text {
+     font-size: 0.9rem; /* Further reduce font size */
+     padding: 5px 12px; /* Adjust padding */
   }
 }
 </style> 
