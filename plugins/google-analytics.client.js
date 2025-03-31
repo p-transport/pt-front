@@ -5,12 +5,14 @@ export default defineNuxtPlugin((nuxtApp) => {
 
   // Only load on client-side and if a valid measurement ID is provided
   // Valid Google Analytics 4 IDs start with G- followed by alphanumeric characters
-  if (process.client && measurementId && /^G-[A-Z0-9]+$/i.test(measurementId) && measurementId !== 'G-877BES8YN8') {
+  const isValidId = /^G-[A-Z0-9]+$/i.test(measurementId);
+
+  if (process.client && measurementId && isValidId) {
     // Load the Google Analytics script
     function loadGoogleAnalytics() {
       const script = document.createElement('script')
       script.async = true
-      script.src = `https://www.googletagmanager.com/gtag/js?id=${measurementId}`
+      script.src = 'https://www.googletagmanager.com/gtag/js?id=' + measurementId;
       document.head.appendChild(script)
       
       window.dataLayer = window.dataLayer || []
@@ -33,7 +35,7 @@ export default defineNuxtPlugin((nuxtApp) => {
     // Add to Vue context
     nuxtApp.provide('gtag', (event, action, params = {}) => {
       if (window.gtag) {
-        console.log('Tracking event:', event, action, params)
+        // console.log('Tracking event:', event, action, params) // Keep original commented log if desired, or remove
         window.gtag('event', event, {
           action: action,
           ...params
@@ -44,7 +46,7 @@ export default defineNuxtPlugin((nuxtApp) => {
     // Provide a dummy function when GA is not loaded
     nuxtApp.provide('gtag', () => {
       // Do nothing in SSR or when no measurement ID is available
-      console.log('Google Analytics not loaded: Invalid or missing measurement ID')
+      console.log('Google Analytics not loaded: Invalid or missing measurement ID') // Restore original log message
     })
   }
 }) 
