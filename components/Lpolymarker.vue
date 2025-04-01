@@ -41,17 +41,17 @@
                 </div>
 
                 <!-- Modal body - now scrollable -->
-                <div class="p-6 overflow-y-auto flex-grow">
-                  <div v-if="loading" class="flex items-center justify-center py-12">
-                    <div class="text-center">
-                      <div class="animate-pulse bg-gray-200 rounded-full h-2.5 w-24 mx-auto mb-3"></div>
-                      <div class="text-sm text-gray-500">Loading routes…</div>
-                    </div>
+                <div v-if="loading" class="p-6 flex-grow flex items-center justify-center">
+                  <div class="text-center">
+                    <div class="animate-pulse bg-gray-200 rounded-full h-2.5 w-24 mx-auto mb-3"></div>
+                    <div class="text-sm text-gray-500">Loading routes…</div>
                   </div>
-                  <div v-else-if="loadError" class="py-8 text-center text-sm text-red-600">
-                    {{ loadError }}
-                  </div>
-                  <section v-else>
+                </div>
+                <div v-else-if="loadError" class="p-6 py-8 text-center text-sm text-red-600">
+                  {{ loadError }}
+                </div>
+                <div v-else-if="hasResults" class="p-6 overflow-y-auto flex-grow">
+                  <section>
                     <div v-for="routes in results" :key="routes.id">
                       <div v-for="route in routes" :key="route.id" class="route">
                         <div class="routeinfo">
@@ -119,9 +119,24 @@
                     </div>
                   </section>
                 </div>
+                <!-- Alternative body when no results are found -->
+                <div v-else-if="salesUrl" class="p-6 flex-grow flex flex-col items-center justify-center text-center">
+                   <h2 class="text-xl text-gray-600 mb-4">No public transport routes found for {{ title }}.</h2>
+                   <p class="mb-6 text-gray-500">However, you can still book tours and activities!</p>
+                   <a @click="trackSalesClick('Main sales link (No Results)', title, salesUrl)"
+                      :href="salesUrl"
+                      target="_blank"
+                      class="inline-block px-8 py-4 bg-primary text-white rounded font-bold text-lg hover:bg-blue-600 transition-colors">
+                      Book Tours in and Around {{ title }}
+                   </a>
+                </div>
+                <!-- Fallback if no results and no sales URL -->
+                <div v-else class="p-6 flex-grow flex items-center justify-center text-center">
+                   <p class="text-gray-500">No transport routes or booking links available for {{ title }}.</p>
+                </div>
 
-                <!-- Modal footer - now fixed at bottom -->
-                <div v-if="salesUrl" class="p-4 border-t mt-auto shrink-0">
+                <!-- Modal footer - show only if there are results and a sales URL -->
+                <div v-if="hasResults && salesUrl" class="p-4 border-t mt-auto shrink-0">
                   <a @click="trackSalesClick('Main sales link', title, salesUrl)"
                      :href="salesUrl"
                      target="_blank"
@@ -206,6 +221,17 @@ export default {
     const routesFetched = ref(false)
     const safeGeoJson = shallowRef(null)
     const leafletLoaded = ref(false)
+
+    // Computed property to check if there are any results
+    const hasResults = computed(() => {
+      // Check if results is an object and has keys
+      if (!results.value || typeof results.value !== 'object' || Object.keys(results.value).length === 0) {
+        return false;
+      }
+      // Check if any of the arrays within the results object are not empty
+      return Object.values(results.value).some(arr => Array.isArray(arr) && arr.length > 0);
+    });
+
     const markerPosition = computed(() => {
       // Try to get position from GeoJSON first
       if (safeGeoJson.value && safeGeoJson.value.geometry) {
@@ -435,7 +461,8 @@ export default {
       leafletLoaded,
       getLeafletComponent,
       markerPosition,
-      trackSalesClick
+      trackSalesClick,
+      hasResults
     }
   },
   
