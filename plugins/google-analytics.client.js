@@ -29,19 +29,22 @@ export default defineNuxtPlugin((nuxtApp) => {
       return gtag
     }
     
-    // Initialize GA
-    const gtag = loadGoogleAnalytics()
-    
-    // Add to Vue context
-    nuxtApp.provide('gtag', (event, action, params = {}) => {
-      if (window.gtag) {
-        // console.log('Tracking event:', event, action, params) // Keep original commented log if desired, or remove
-        window.gtag('event', event, {
-          action: action,
-          ...params
-        })
-      }
-    })
+    // Defer loading until DOM is ready
+    document.addEventListener('DOMContentLoaded', () => {
+      // Initialize GA
+      const gtag = loadGoogleAnalytics()
+      
+      // Add to Vue context
+      nuxtApp.provide('gtag', (event, action, params = {}) => {
+        if (window.gtag) {
+          // console.log('Tracking event:', event, action, params) // Keep original commented log if desired, or remove
+          window.gtag('event', event, {
+            action: action,
+            ...params
+          })
+        }
+      })
+    });
   } else {
     // Provide a dummy function when GA is not loaded
     nuxtApp.provide('gtag', () => {
