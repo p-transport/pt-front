@@ -1,0 +1,3 @@
+# Allow all crawlers for production
+User-agent: *
+Allow: /
