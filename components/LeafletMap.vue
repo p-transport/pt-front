@@ -1,16 +1,17 @@
 <template>
   <div class="w-full h-full relative">
     <div id="leaflet-container" class="w-full h-full">
-      <div v-if="!loaded" class="flex items-center justify-center h-full">
-        <div class="text-center">
-          <div class="text-xl font-semibold mb-2">Loading map components...</div>
-          <div class="animate-pulse bg-gray-200 rounded-full h-2.5 w-24 mx-auto"></div>
-        </div>
-      </div>
-      
-      <div v-if="error" class="absolute top-0 left-0 right-0 bg-red-100 text-red-800 p-4 border-b border-red-200">
+      <div v-if="error" class="absolute top-0 left-0 right-0 bg-red-100 text-red-800 p-4 border-b border-red-200 z-50">
         <p>{{ error }}</p>
       </div>
+
+      <ClientOnly>
+        <slot v-if="!loaded" name="loading">
+          <div class="absolute inset-0 flex items-center justify-center">
+            <div class="animate-spin rounded-full h-12 w-12 border-4 border-blue-300 border-t-transparent"></div>
+          </div>
+        </slot>
+      </ClientOnly>
 
       <ClientOnly>
         <slot v-if="loaded" :components="leafletComponents"></slot>

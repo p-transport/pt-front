@@ -41,14 +41,6 @@
           </template>
         </component>
       </template>
-      <template v-else>
-        <div class="flex items-center justify-center h-full">
-          <div class="text-center">
-            <div class="text-xl font-semibold mb-2">Loading map components...</div>
-            <div class="animate-pulse bg-gray-200 rounded-full h-2.5 w-24 mx-auto"></div>
-          </div>
-        </div>
-      </template>
     </LeafletMap>
     
     <!-- Floating Ad Banner -->
