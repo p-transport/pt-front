@@ -73,5 +73,17 @@ export default defineNuxtConfig({
     }
   },
 
+  // Nitro configuration for server options
+  nitro: {
+    routeRules: {
+      // Cache assets in the _nuxt directory for 1 year
+      '/_nuxt/**': {
+        headers: {
+          'cache-control': 'public, max-age=31536000, immutable'
+        }
+      }
+    }
+  },
+
   compatibilityDate: '2025-03-20'
 })
