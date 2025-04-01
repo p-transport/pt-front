@@ -24,6 +24,7 @@
                       prefix="&copy; 2025 Cartography: Hugarflug ehf / Ingi Gunnar Jóhannsson. Published by <a href='https://www.hjolafaerni.is' target='_blank'>Hjólafærni á Íslandi</a> – All rights reserved" />
           
           <!-- Use the markers directly -->
+          <!-- eslint-disable-next-line vue/no-v-for-template-key -->
           <template v-for="(marker, index) in markers" :key="index">
             <Lpolymarker
               :title="marker.title"
