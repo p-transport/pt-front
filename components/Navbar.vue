@@ -49,7 +49,7 @@
     
     <!-- Mobile menu -->
     <div v-if="mobileMenuOpen" class="md:hidden bg-[#a10b0b] border-t border-white border-opacity-20 relative z-[100]">
-      <div class="container-fluid px-4 py-2">
+      <div class="container-fluid px-4 pt-4 pb-8">
         <div class="flex flex-col space-y-3">
           <a href="/" class="mobile-nav-link">Map</a>
           <a href="/about" class="mobile-nav-link">About</a>
@@ -66,15 +66,17 @@
           </div>
           
           <!-- PDF links in mobile menu -->
-          <a 
-            v-for="(link, index) in links" 
-            :key="index" 
-            :href="link.file" 
-            target="_blank"
-            class="mobile-nav-link pl-3 border-l-2 border-white border-opacity-40"
-          >
-            {{ link.link_title }}
-          </a>
+          <div class="border-l-2 border-white border-opacity-40">
+            <a 
+              v-for="(link, index) in links" 
+              :key="index" 
+              :href="link.file" 
+              target="_blank"
+              class="mobile-nav-link ml-4"
+            >
+              {{ link.link_title }}
+            </a>
+          </div>
         </div>
       </div>
     </div>
