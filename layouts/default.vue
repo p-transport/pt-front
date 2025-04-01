@@ -67,8 +67,6 @@ body, html {
   padding: 0;
   height: 100%;
   /* Prevent overscroll/bounce effect */
-  position: fixed;
-  overflow: hidden;
   width: 100%;
 }
 

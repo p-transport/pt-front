@@ -132,6 +132,14 @@ export default {
       minZoom: 0
     })
     
+    // Store original body/html styles
+    let originalHtmlOverflow = ''
+    let originalHtmlPosition = ''
+    let originalHtmlWidth = ''
+    let originalBodyOverflow = ''
+    let originalBodyPosition = ''
+    let originalBodyWidth = ''
+    
     // Function to setup CRS.Simple when Leaflet is ready
     function setupMapOptions(mapObject) {
       if (mapObject && mapObject.leafletObject) {
@@ -208,6 +216,23 @@ export default {
     onMounted(async () => {
       console.log('Index page mounted')
       
+      // Disable scrolling for index page
+      if (typeof window !== 'undefined') {
+        originalHtmlOverflow = document.documentElement.style.overflow
+        originalHtmlPosition = document.documentElement.style.position
+        originalHtmlWidth = document.documentElement.style.width
+        originalBodyOverflow = document.body.style.overflow
+        originalBodyPosition = document.body.style.position
+        originalBodyWidth = document.body.style.width
+
+        document.documentElement.style.overflow = 'hidden'
+        document.documentElement.style.position = 'fixed'
+        document.documentElement.style.width = '100%'
+        document.body.style.overflow = 'hidden'
+        document.body.style.position = 'fixed'
+        document.body.style.width = '100%'
+      }
+      
       // Set initial window width
       if (typeof window !== 'undefined') {
         windowWidth.value = window.innerWidth
@@ -252,8 +277,19 @@ export default {
       }
     }
     
-    // Clean up event listener on unmount
+    // Add onUnmounted hook to restore scrolling
     onUnmounted(() => {
+      console.log('Index page unmounted')
+      if (typeof window !== 'undefined') {
+        document.documentElement.style.overflow = originalHtmlOverflow
+        document.documentElement.style.position = originalHtmlPosition
+        document.documentElement.style.width = originalHtmlWidth
+        document.body.style.overflow = originalBodyOverflow
+        document.body.style.position = originalBodyPosition
+        document.body.style.width = originalBodyWidth
+      }
+
+      // Clean up resize listener
       if (typeof window !== 'undefined') {
         window.removeEventListener('resize', handleResize)
       }
