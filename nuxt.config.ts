@@ -30,7 +30,6 @@ export default defineNuxtConfig({
       ],
       link: [
         { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
-        { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css?family=Inter:400,700,900|Material+Icons&display=swap' }
       ]
     }
   },
@@ -44,7 +43,21 @@ export default defineNuxtConfig({
   // Modules
   modules: [
     '@nuxtjs/tailwindcss',
+    '@nuxtjs/google-fonts'
   ],
+
+  // Google Fonts configuration
+  googleFonts: {
+    families: {
+      Inter: [400, 700, 900],
+      'Material Icons': true
+    },
+    display: 'swap', // Recommended for performance
+    subsets: ['latin', 'latin-ext'],
+    download: false,
+    prefetch: true,
+    preconnect: true,
+  },
 
   // Build Configuration
   build: {
