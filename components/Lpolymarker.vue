@@ -63,7 +63,7 @@
                                     <i v-if="route.ferry" class="material-icons md-18">directions_boat</i>
                                     <i v-else-if="route.carferry" class="material-icons md-18">directions_boat</i>
                                     <i v-else-if="route.flight" class="material-icons md-18">flight</i>
-                                    <span v-else-if="route.number">{{ route.number }}</span>
+                                    <span v-else-if="route.number" :style="typeof route.number === 'string' && route.number.length === 3 ? { fontSize: '14px' } : null">{{ route.number }}</span>
                                     <i v-else class="material-icons md-18">directions_bus</i>
                                   </span>
                                 </div>

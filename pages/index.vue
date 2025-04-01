@@ -145,7 +145,7 @@ export default {
       if (mapObject && mapObject.leafletObject) {
         // Set CRS to Simple after Leaflet is loaded
         mapObject.leafletObject.options.crs = window.L.CRS.Simple
-        console.log('Set CRS to Simple')
+        // console.log('Set CRS to Simple')
       }
     }
 
@@ -174,7 +174,7 @@ export default {
         const response = await fetch('https://wp.publictransport.is/wp-json/pt/v1/markers')
         const data = await response.json()
         markers.value = data
-        console.log(`Fetched ${data.length} markers`)
+        // console.log(`Fetched ${data.length} markers`)
       } catch (error) {
         console.error('Error fetching markers:', error)
       }
@@ -214,7 +214,7 @@ export default {
     })
 
     onMounted(async () => {
-      console.log('Index page mounted')
+      //console.log('Index page mounted')
       
       // Disable scrolling for index page
       if (typeof window !== 'undefined') {
