@@ -13,7 +13,16 @@ export default defineNuxtConfig({
       meta: [
         { charset: 'utf-8' },
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-        { name: 'description', content: 'Public Transport' }
+        { name: 'description', content: 'A map with the options for public transport in and around Iceland' },
+        { property: 'og:title', content: 'PublicTransport.is' },
+        { property: 'og:description', content: 'A map with the options for public transport in and around Iceland' },
+        { property: 'og:type', content: 'website' },
+        { property: 'og:url', content: 'https://www.publictransport.is/' },
+        { property: 'og:image', content: 'https://www.publictransport.is/ptss.jpg' },
+        { name: 'twitter:card', content: 'summary' },
+        { name: 'twitter:title', content: 'PublicTransport.is' },
+        { name: 'twitter:description', content: 'A map with the options for public transport in and around Iceland' },
+        { name: 'twitter:image', content: 'https://www.publictransport.is/ptss.jpg' }
       ],
       link: [
         { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },

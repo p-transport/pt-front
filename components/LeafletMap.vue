@@ -11,16 +11,7 @@
       <div v-if="error" class="absolute top-0 left-0 right-0 bg-red-100 text-red-800 p-4 border-b border-red-200">
         <p>{{ error }}</p>
       </div>
-      
-      <slot v-if="!loaded" name="loading">
-        <div class="flex items-center justify-center h-full">
-          <div class="text-center">
-            <div class="text-xl font-semibold mb-2">Loading map components...</div>
-            <div class="animate-pulse bg-gray-200 rounded-full h-2.5 w-24 mx-auto"></div>
-          </div>
-        </div>
-      </slot>
-      
+
       <ClientOnly>
         <slot v-if="loaded" :components="leafletComponents"></slot>
       </ClientOnly>

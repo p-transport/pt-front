@@ -87,3 +87,8 @@ sw.*
 # DS Store
 .DS_Store
 .vercel
+
+# Database dumps must never be committed
+*.sql
+*.sql.bz2
+*.sql.gz

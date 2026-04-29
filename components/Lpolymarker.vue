@@ -42,7 +42,16 @@
 
                 <!-- Modal body - now scrollable -->
                 <div class="p-6 overflow-y-auto flex-grow">
-                  <section>
+                  <div v-if="loading" class="flex items-center justify-center py-12">
+                    <div class="text-center">
+                      <div class="animate-pulse bg-gray-200 rounded-full h-2.5 w-24 mx-auto mb-3"></div>
+                      <div class="text-sm text-gray-500">Loading routes…</div>
+                    </div>
+                  </div>
+                  <div v-else-if="loadError" class="py-8 text-center text-sm text-red-600">
+                    {{ loadError }}
+                  </div>
+                  <section v-else>
                     <div v-for="routes in results" :key="routes.id">
                       <div v-for="route in routes" :key="route.id" class="route">
                         <div class="routeinfo">
@@ -192,6 +201,9 @@ export default {
     const fillColor = ref(props.color || "#000")
     const modalShow = ref(false)
     const results = ref({})
+    const loading = ref(false)
+    const loadError = ref(null)
+    const routesFetched = ref(false)
     const safeGeoJson = shallowRef(null)
     const leafletLoaded = ref(false)
     const markerPosition = computed(() => {
@@ -341,34 +353,45 @@ export default {
         }
       }
       
+    })
+
+    async function fetchRoutes() {
+      if (routesFetched.value || loading.value) return
+      loading.value = true
+      loadError.value = null
       try {
-        const { data } = await axios.get(`https://wp.publictransport.is/wp-json/pt/v1/marker-routes/${props.slug}`);
-        results.value = data;
-        
-        // Process GeoJSON again after mounting
-        processSafeGeoJson(props.geojson);
+        const { data } = await axios.get(`https://wp.publictransport.is/wp-json/pt/v1/marker-routes/${props.slug}`)
+        results.value = data
+        routesFetched.value = true
       } catch (error) {
         console.error('Error fetching marker routes:', error, {
           title: props.title,
           slug: props.slug
-        });
+        })
+        loadError.value = 'Could not load routes. Please try again.'
+      } finally {
+        loading.value = false
       }
-    })
+    }
 
     function markerClick(at, act, lab) {
       modalShow.value = !modalShow.value
-      
-      // Get the $gtag function from the Nuxt instance
-      const { $gtag } = useNuxtApp()
-      
-      // Track marker click event
-      if ($gtag && modalShow.value) {
-        $gtag('marker_click', 'click', {
-          marker_title: props.title,
-          marker_id: props.id,
-          marker_slug: props.slug,
-          location: `${props.lat},${props.lng}`
-        })
+
+      if (modalShow.value) {
+        fetchRoutes()
+
+        // Get the $gtag function from the Nuxt instance
+        const { $gtag } = useNuxtApp()
+
+        // Track marker click event
+        if ($gtag) {
+          $gtag('marker_click', 'click', {
+            marker_title: props.title,
+            marker_id: props.id,
+            marker_slug: props.slug,
+            location: `${props.lat},${props.lng}`
+          })
+        }
       }
     }
 
@@ -404,6 +427,8 @@ export default {
       fillColor,
       modalShow,
       results,
+      loading,
+      loadError,
       markerClick,
       styleFunction,
       safeGeoJson,
