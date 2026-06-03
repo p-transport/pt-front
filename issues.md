@@ -112,6 +112,104 @@ Only `pt20240711_en.svg` is referenced (`pages/index.vue:16`). These ship in eve
 
 Most are likely transitive dev-dependencies. Worth a single audit pass and a targeted update — but `npm audit fix --force` is a footgun that can break Nuxt; do it carefully.
 
+## UI/UX
+
+From the 2026-05-04 designer review. Top three (marker discoverability, "Book now" weight, parallel marker fetch) are the highest leverage.
+
+### Markers are invisible — zero discoverability for first-time users
+
+- **Severity:** high (core conversion risk)
+- **Effort:** S (hover highlight) + S (first-visit tooltip)
+- **Files:** `pages/index.vue:33-34`, `components/Lpolymarker.vue` (`styleFunction`)
+
+GeoJSON markers render at `opacity: 0` / `fillOpacity: 0`. A first-time visitor sees a static SVG with no affordance — no cursor change, no tooltip, no legend. On `mouseover`, apply a low-opacity fill (e.g. 15% of the route's `provider_color`) and switch to a pointer cursor. Add a one-time "Tap a region to see routes" tooltip persisted to `localStorage`. A small legend chip in the bottom corner doubles as hint and CTA.
+
+### "Book now" CTA is undersized; modal footer is gated on `salesUrl`
+
+- **Severity:** high (revenue-direct)
+- **Effort:** S
+- **Files:** `components/Lpolymarker.vue:112, 128`
+
+Per-route "Book now" is a small outlined border button (`border border-primary text-primary rounded`) — looks secondary, competes with the route name link above. Footer "Book Tours in and Around X" CTA only renders when `salesUrl` is present on the marker.
+
+Fix: invert per-route button to filled pill (`bg-primary text-white` + right-arrow icon, fixed min-width so it doesn't reflow). Always render the footer CTA, falling back to the first route's `sales_url` when no marker-level `salesUrl` exists.
+
+### Parallel marker fetch + Leaflet CDN preconnect
+
+- **Severity:** medium (perceived perf)
+- **Effort:** S (preconnect + parallel fetch) / M (Promise-based script load)
+- **Files:** `components/LeafletMap.vue`, `components/Lpolymarker.vue:336-353`, `nuxt.config.ts`
+
+Waterfall today: CDN JS → `window.L` → vue-leaflet import → marker fetch. `Lpolymarker.vue` polls `window.L` every 200ms for up to 10s.
+
+Quick wins: start `fetchMarkers()` in `onMounted` of `index.vue` independently of Leaflet (the data doesn't need `L`). Add `<link rel="preconnect" href="https://unpkg.com">` to `nuxt.config.ts` head. Replace `setInterval` polling with a Promise that resolves on script `onload`. **Note:** this is largely subsumed by the CDN-Leaflet rip-out (top of file); ship that first and most of this is moot.
+
+### Modal: fetch on click, no skeleton — feels broken on slow networks
+
+- **Severity:** medium
+- **Effort:** S (skeleton) / M (prefetch on hover)
+- **Files:** `components/Lpolymarker.vue:381` (`fetchRoutes`)
+
+Loading state is bare pulsing bar + "Loading routes…" text in an empty modal. On slow mobile this can be 1–2s of blank. Replace with a skeleton mirroring the route row layout (badge square + two text lines + button outline). Optional follow-up: prefetch on `mouseenter`/`touchstart` of the GeoJSON layer.
+
+### Mobile modal `max-h-[70vh]` clips content; no overflow indicator
+
+- **Severity:** medium
+- **Effort:** S (height + fade) / M (bottom-sheet pattern)
+- **Files:** `components/Lpolymarker.vue:31, 536-549`
+
+On iPhone SE (~667px), 70vh leaves ~272px for routes after header/footer. Styled scrollbar is webkit-only — invisible on Firefox and iOS Safari. No fade/gradient mask to signal overflow. Raise to 85vh (safe — `body` is `position: fixed`), add a bottom `mask-image` gradient when content overflows. Stretch: bottom-sheet pattern with drag handle on mobile.
+
+### Ad banner: third blue, 300×250 covers ~37% of small viewports, dismissal not persisted
+
+- **Severity:** medium
+- **Effort:** S
+- **Files:** `components/AdBanner.vue:43`
+
+Banner uses `linear-gradient(#007bff, #0056b3)` — a third blue not present elsewhere. On mobile, 300×250 medium-rectangle covers ~37% of an iPhone SE. `localStorage` dismissal is commented out, so each refresh re-shows. Switch mobile to a slim full-width bottom bar (~56px, with `safe-area-inset-bottom`), use the brand's actual colors, persist dismissal for 7 days, add a transport icon.
+
+### Zero keyboard nav on map markers; modal lacks Escape key + aria-label
+
+- **Severity:** medium (WCAG 2.1 AA)
+- **Effort:** S (modal a11y) / M (accessible marker list)
+- **Files:** `components/Lpolymarker.vue:9, 38`
+
+`LGeoJson` click handlers have no `tabindex`, `role`, or keyboard event handlers — keyboard users can't open a marker. Modal close button has no `aria-label`. Escape key not wired.
+
+Fix: `@keydown.escape="modalShow = false"` on the modal wrapper (`tabindex="-1"` + `focus()` on open), `aria-label="Close"` on close button. For markers, add a visually-hidden DOM list of all destinations as `<button>` elements that call `markerClick` — sighted users get the map, AT users get the list.
+
+### Loading state is a gray screen; the static SVG could fill it instantly
+
+- **Severity:** low (perceived perf)
+- **Effort:** S
+- **Files:** `pages/index.vue:44-50`
+
+While Leaflet boots, users see "Loading map components…" on a blank gray screen. The SVG basemap (`/pt20240711_en.svg`) is a static file — render it as a non-interactive `<img>` (or CSS background) in the loading slot, fade out when the interactive map mounts. Near-instant first contentful paint.
+
+### Typography: Inter everywhere, weights are flat, no scanning hierarchy in modal
+
+- **Severity:** low
+- **Effort:** S
+- **Files:** `assets/css/main.css:7`, `components/Lpolymarker.vue` (modal headings)
+
+`*` selector applies Inter globally. Route destination names are `1.05rem` — barely larger than body. Modal `h1` has no explicit size. `.ptitle` ("Transport to and from") is `16px uppercase` — same weight as body. Tighten weight/size discipline within Inter (route names `font-semibold text-base`, modal title `text-xl font-bold`, providers `text-xs text-gray-500`). No new font required.
+
+### Navbar `#a10b0b` red is a brand orphan
+
+- **Severity:** low
+- **Effort:** S
+- **Files:** `components/Navbar.vue:2`, `assets/css/main.css` (`prose a` rules)
+
+Dark red appears only in the navbar and `prose a` on `/about` and `/howtouse`. Map page is blue-toned; the result reads as two products. Either commit to red as the brand accent (use it for the modal footer CTA, replacing blue) or replace navbar with the app blue. Related to (and should be resolved alongside) the existing "two disagreeing definitions of primary color" item above.
+
+### Ferry vs car-ferry icons identical; critical for tourists with rental cars
+
+- **Severity:** low
+- **Effort:** S
+- **Files:** `components/Lpolymarker.vue:63-66`
+
+Both `route.ferry` and `route.carferry` render `directions_boat`. Car-ferry distinction is critical trip-planning info for tourists. Use a composed icon or different glyph for car ferries; promote "Car ferry |" from the provider line to a small pill badge above the route name.
+
 ## Maybe-rewrite (deferred)
 
 Not a defect, just a strategic option. The architect recommended **fix in place over rewrite** for this side-project. If a rewrite is ever pursued, the honest pick for this app's shape (one-page static-ish, WP backend, no SEO-heavy content) is **Vite + Vue 3 SPA, no Nuxt** — removes the framework that's causing 80% of the friction, vue-leaflet works trivially client-side, components stay portable. Astro is fashionable but the vue-leaflet `window.L` issue resurfaces inside a client island.

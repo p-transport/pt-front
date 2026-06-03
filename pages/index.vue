@@ -1,53 +1,47 @@
 <template>
   <div class="map-container">
-    <LeafletMap v-slot="{ components }">
-      <template v-if="components && components.LMap">
-        <component :is="components.LMap" 
-                  ref="map"
-                  :zoom="computedZoom" 
-                  :center="computedCenter" 
-                  :bounds="bounds" 
-                  :use-global-leaflet="true"
-                  :options="mapOptions"
-                  @ready="onMapReady">
-          <!-- Replace tile layer with SVG image overlay -->
-          <component :is="components.LImageOverlay"
-                     url="/pt20240711_en.svg" 
-                     :bounds="bounds"
-                     :opacity="1"
-                     layer-type="base"
-                     name="Public Transport Map" />
-                     
-          <component :is="components.LControlZoom" position="topright" />
-          <component :is="components.LControlAttribution" 
-                      position="bottomright" 
-                      prefix="&copy; 2025 Cartography: Hugarflug ehf / Ingi Gunnar Jóhannsson. Published by <a href='https://www.hjolafaerni.is' target='_blank'>Hjólafærni á Íslandi</a> – All rights reserved" />
-          
-          <!-- Use the markers directly -->
-          <!-- eslint-disable-next-line vue/no-v-for-template-key -->
-          <template v-for="(marker, index) in markers" :key="index">
-            <Lpolymarker
-              :title="marker.title"
-              :slug="marker.slug"
-              :geojson="parsedGeoJson(marker.geojson)"
-              :color="marker.color || '#ff0000'"
-              :opacity="debugMode ? 0.6 : 0"
-              :fillOpacity="debugMode ? 0.4 : 0"
-              :weight="marker.weight || 2"
-              :radius="marker.radius || 10"
-              :sales-url="marker.sales_url"
-              :debug-mode="debugMode"
-            />
-          </template>
-        </component>
-      </template>
+    <LeafletMap>
+      <LMap ref="map"
+            :zoom="computedZoom"
+            :center="computedCenter"
+            :bounds="bounds"
+            :use-global-leaflet="true"
+            :options="mapOptions"
+            @ready="onMapReady">
+        <!-- SVG image overlay basemap (CRS.Simple, not geographic tiles) -->
+        <LImageOverlay url="/pt20240711_en.svg"
+                       :bounds="bounds"
+                       :opacity="1"
+                       layer-type="base"
+                       name="Public Transport Map" />
+
+        <LControlZoom position="topright" />
+        <LControlAttribution position="bottomright"
+                             prefix="&copy; 2025 Cartography: Hugarflug ehf / Ingi Gunnar Jóhannsson. Published by <a href='https://www.hjolafaerni.is' target='_blank'>Hjólafærni á Íslandi</a> – All rights reserved" />
+
+        <!-- Use the markers directly -->
+        <template v-for="(marker, index) in markers" :key="index">
+          <Lpolymarker
+            :title="marker.title"
+            :slug="marker.slug"
+            :geojson="parsedGeoJson(marker.geojson)"
+            :color="marker.color || '#ff0000'"
+            :opacity="debugMode ? 0.6 : 0"
+            :fillOpacity="debugMode ? 0.4 : 0"
+            :weight="marker.weight || 2"
+            :radius="marker.radius || 10"
+            :sales-url="marker.sales_url"
+            :debug-mode="debugMode"
+          />
+        </template>
+      </LMap>
     </LeafletMap>
-    
+
     <!-- Floating Ad Banner -->
     <div class="floating-ad-container">
       <AdBanner :size="adBannerSize" />
     </div>
-    
+
     <!-- Debug mode indicator -->
     <div v-if="debugMode" class="debug-indicator">
       <div class="bg-red-600 text-white px-3 py-1 rounded shadow-lg text-sm">
@@ -60,12 +54,22 @@
 <script>
 import { ref, onMounted, reactive, markRaw, computed, onUnmounted } from 'vue'
 import axios from 'axios'
+import {
+  LMap,
+  LImageOverlay,
+  LControlZoom,
+  LControlAttribution
+} from '@vue-leaflet/vue-leaflet'
 import Lpolymarker from '~/components/Lpolymarker.vue'
 import LeafletMap from '~/components/LeafletMap.vue'
 import AdBanner from '~/components/AdBanner.vue'
 
 export default {
   components: {
+    LMap,
+    LImageOverlay,
+    LControlZoom,
+    LControlAttribution,
     Lpolymarker,
     LeafletMap,
     AdBanner

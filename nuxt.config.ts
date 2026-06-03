@@ -4,8 +4,9 @@ import { defineNuxtConfig } from 'nuxt/config'
 export default defineNuxtConfig({
   devtools: { enabled: true },
 
-  // Setting SPA mode, equivalent to mode: 'spa' in Nuxt 2
-  // ssr: false,
+  // SPA mode: every fetch is gated on onMounted anyway, and vue-leaflet
+  // reads window.L at module-evaluation time, which breaks under SSR.
+  ssr: false,
 
   app: {
     head: {
@@ -62,7 +63,7 @@ export default defineNuxtConfig({
 
   // Build Configuration
   build: {
-    transpile: ['leaflet'],
+    transpile: ['leaflet', '@vue-leaflet/vue-leaflet'],
   },
 
   // Nuxt.js Runtime Config

@@ -1,23 +1,22 @@
 <template>
     <div>
-        <slot v-if="!leafletLoaded" name="loading"></slot>
         <ClientOnly>
             <template v-if="safeGeoJson">
-                <component :is="getLeafletComponent('LGeoJson')"
+                <LGeoJson
                   :geojson="safeGeoJson"
                   :options-style="styleFunction"
                   @click="markerClick('Marker','Click',title)"
-                />         
+                />
             </template>
             <template v-else>
                 <!-- Fallback to a circle marker if no GeoJSON is available -->
-                <component :is="getLeafletComponent('LCircleMarker')" 
-                  :lat-lng="markerPosition" 
-                  :radius="radius" 
+                <LCircleMarker
+                  :lat-lng="markerPosition"
+                  :radius="radius"
                   :weight="weight"
-                  :color="color" 
+                  :color="color"
                   :opacity="0.8"
-                  :fillColor="color" 
+                  :fillColor="color"
                   :fillOpacity="0.5"
                   @click="markerClick('Marker','Click',title)"
                 />
@@ -153,12 +152,16 @@
 
 <script>
 import axios from 'axios'
-import { ref, computed, onMounted, watch, inject, shallowRef, markRaw } from 'vue'
+import { ref, computed, watch, shallowRef, markRaw } from 'vue'
 import { useNuxtApp } from '#app'
+import { LGeoJson, LCircleMarker } from '@vue-leaflet/vue-leaflet'
 
 export default {
   name: 'Lpolymarker',
-  components: {},
+  components: {
+    LGeoJson,
+    LCircleMarker
+  },
   
   props: {
     slug: {
@@ -220,17 +223,14 @@ export default {
     const loadError = ref(null)
     const routesFetched = ref(false)
     const safeGeoJson = shallowRef(null)
-    const leafletLoaded = ref(false)
 
-    // Computed property to check if there are any results
     const hasResults = computed(() => {
-      // Check if results is an object and has keys
       if (!results.value || typeof results.value !== 'object' || Object.keys(results.value).length === 0) {
         return false;
       }
-      // Check if any of the arrays within the results object are not empty
       return Object.values(results.value).some(arr => Array.isArray(arr) && arr.length > 0);
     });
+
 
     const markerPosition = computed(() => {
       // Try to get position from GeoJSON first
@@ -274,40 +274,6 @@ export default {
       return [64.1466, -21.9426];
     });
     
-    // Function to get the right Leaflet component
-    function getLeafletComponent(name) {
-      if (typeof window === 'undefined') {
-        return null;
-      }
-      
-      try {
-        if (window.__vueLeafletComponents && window.__vueLeafletComponents[name]) {
-          return markRaw(window.__vueLeafletComponents[name]);
-        }
-        
-        // Try to load the components if Leaflet is available but components aren't
-        if (window.L && (!window.__vueLeafletComponents || !window.__vueLeafletComponents[name])) {
-          // We'll dynamically import, but this won't be available immediately
-          setTimeout(() => {
-            import('@vue-leaflet/vue-leaflet').then(module => {
-              if (!window.__vueLeafletComponents) {
-                window.__vueLeafletComponents = {};
-              }
-              window.__vueLeafletComponents[name] = markRaw(module[name]);
-              // This will cause a re-render
-              leafletLoaded.value = true;
-            }).catch(e => {
-              console.error(`Failed to load ${name} component:`, e);
-            });
-          }, 0);
-        }
-      } catch (e) {
-        console.error('Error getting Leaflet component:', e);
-      }
-      
-      return null;
-    }
-
     // Process GeoJSON when the component is mounted or when the prop changes
     watch(() => props.geojson, (newGeoJson) => {
       processSafeGeoJson(newGeoJson)
@@ -336,50 +302,6 @@ export default {
         safeGeoJson.value = null
       }
     }
-
-    onMounted(async () => {
-      // Initialize leafletLoaded as false until we confirm components are available
-      leafletLoaded.value = false;
-      
-      // Configure global leaflet components container
-      if (typeof window !== 'undefined') {
-        if (!window.__vueLeafletComponents) {
-          window.__vueLeafletComponents = {};
-        }
-        
-        // Check if Leaflet is available
-        if (window.L) {
-          try {
-            const module = await import('@vue-leaflet/vue-leaflet');
-            window.__vueLeafletComponents.LGeoJson = markRaw(module.LGeoJson);
-            window.__vueLeafletComponents.LCircleMarker = markRaw(module.LCircleMarker);
-            leafletLoaded.value = true;
-          } catch (err) {
-            console.error('Error loading vue-leaflet components:', err);
-          }
-        } else {
-          // Set up a watcher to check for Leaflet availability
-          const checkLeaflet = setInterval(() => {
-            if (window.L) {
-              clearInterval(checkLeaflet);
-              import('@vue-leaflet/vue-leaflet').then(module => {
-                window.__vueLeafletComponents.LGeoJson = markRaw(module.LGeoJson);
-                window.__vueLeafletComponents.LCircleMarker = markRaw(module.LCircleMarker);
-                leafletLoaded.value = true;
-              }).catch(err => {
-                console.error('Error loading vue-leaflet components:', err);
-              });
-            }
-          }, 200);
-          
-          // Clear the interval after 10 seconds to prevent memory leaks
-          setTimeout(() => {
-            clearInterval(checkLeaflet);
-          }, 10000);
-        }
-      }
-      
-    })
 
     async function fetchRoutes() {
       if (routesFetched.value || loading.value) return
@@ -458,8 +380,6 @@ export default {
       markerClick,
       styleFunction,
       safeGeoJson,
-      leafletLoaded,
-      getLeafletComponent,
       markerPosition,
       trackSalesClick,
       hasResults
