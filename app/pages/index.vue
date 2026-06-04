@@ -15,9 +15,9 @@
                        layer-type="base"
                        name="Public Transport Map" />
 
-        <LControlZoom position="bottomright" />
         <LControlAttribution position="bottomright"
                              prefix="&copy; 2026 Cartography: Hugarflug ehf / Ingi Gunnar Jóhannsson. Published by <a href='https://www.hjolafaerni.is' target='_blank'>Hjólafærni á Íslandi</a> – All rights reserved" />
+        <LControlZoom position="bottomright" />
 
         <!-- Use the markers directly -->
         <template v-for="(marker, index) in markers" :key="index">
