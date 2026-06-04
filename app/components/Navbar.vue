@@ -1,5 +1,5 @@
 <template>
-  <nav ref="navEl" :class="['navbar sticky top-0 z-50 px-4 pt-3', { 'fixed top-0 left-0 right-0': mobileMenuOpen }]">
+  <nav :class="['navbar is-scrolled sticky top-0 z-50 px-4 pt-3', { 'fixed top-0 left-0 right-0': mobileMenuOpen }]">
     <div class="navbar-bar flex items-center justify-between px-5 py-3 rounded-full">
       <a href="/" class="text-xl font-bold text-gray-800 tracking-tight">PublicTransport.is</a>
 
@@ -76,13 +76,12 @@
 </template>
 
 <script>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import axios from 'axios'
 
 export default {
   name: 'Navbar',
   setup() {
-    const navEl = ref(null)
     const mobileMenuOpen = ref(false)
     const dropdownOpen = ref(false)
     const infoLink = ref(null)
@@ -104,79 +103,19 @@ export default {
       }
     }
 
-    // Scroll-driven: transparent → frosted glass, auto-hide on scroll-down
-    const SHOW_AT = 8
-    const HIDE_PAST = 80
-    const DIR_DELTA = 4
-    let lastY = 0
-    let ticking = false
+    onMounted(() => { fetchNavLinks() })
 
-    const updateScroll = () => {
-      const el = navEl.value
-      if (!el) return
-      const y = window.scrollY
-      const dy = y - lastY
-      el.classList.toggle('is-scrolled', y > SHOW_AT)
-      if (y <= SHOW_AT) {
-        el.classList.remove('is-hidden')
-      } else if (dy > DIR_DELTA && y > HIDE_PAST) {
-        el.classList.add('is-hidden')
-      } else if (dy < -DIR_DELTA) {
-        el.classList.remove('is-hidden')
-      }
-      lastY = y
-      ticking = false
-    }
-
-    const onScroll = () => {
-      if (!ticking) {
-        ticking = true
-        requestAnimationFrame(updateScroll)
-      }
-    }
-
-    onMounted(() => {
-      fetchNavLinks()
-      lastY = window.scrollY
-      updateScroll()
-      window.addEventListener('scroll', onScroll, { passive: true })
-    })
-
-    onUnmounted(() => {
-      window.removeEventListener('scroll', onScroll)
-    })
-
-    return { navEl, mobileMenuOpen, dropdownOpen, infoLink, links, linksTitle, closeDropdownSoon }
+    return { mobileMenuOpen, dropdownOpen, infoLink, links, linksTitle, closeDropdownSoon }
   }
 }
 </script>
 
 <style>
-.navbar {
-  background-color: transparent;
-}
-
 .navbar-bar {
-  background-color: transparent;
-  transition:
-    background-color 220ms ease,
-    box-shadow 220ms ease,
-    backdrop-filter 220ms ease,
-    -webkit-backdrop-filter 220ms ease,
-    transform 620ms cubic-bezier(0.32, 0.72, 0, 1),
-    opacity 520ms cubic-bezier(0.32, 0.72, 0, 1);
-}
-
-.navbar.is-scrolled .navbar-bar {
   background-color: rgba(255, 255, 255, 0.55);
   -webkit-backdrop-filter: blur(18px) saturate(150%);
   backdrop-filter: blur(18px) saturate(150%);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.07);
-}
-
-.navbar.is-hidden .navbar-bar {
-  transform: translateY(-160%);
-  opacity: 0;
 }
 
 .glass-dropdown {
