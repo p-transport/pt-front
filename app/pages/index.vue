@@ -102,7 +102,7 @@ export default {
       } else if (windowWidth.value < 1600) {
         return 2.8;
       } else {
-        return 3.2; // Extra-wide monitors
+        return 3.0; // Extra-wide monitors
       }
     })
     
