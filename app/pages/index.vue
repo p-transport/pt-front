@@ -98,9 +98,9 @@ export default {
       } else if (windowWidth.value < 768) {
         return 2.0;
       } else if (windowWidth.value < 1280) {
-        return 2.5;
+        return 2.3;
       } else {
-        return 2.8; // Large viewports — fill more of the screen
+        return 2.6; // Large viewports — fill more of the screen
       }
     })
     
