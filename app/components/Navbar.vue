@@ -1,7 +1,7 @@
 <template>
   <nav class="fixed top-0 left-0 right-0 z-50 px-4 pt-3 flex justify-between items-start pointer-events-none">
     <!-- Logo pill -->
-    <a href="/" class="glass-pill px-5 py-3 rounded-full pointer-events-auto text-xl font-bold text-gray-800 tracking-tight no-underline">
+    <a href="/" class="logo-pill px-5 py-3 rounded-full pointer-events-auto text-xl text-white font-semibold no-underline">
       PublicTransport.is
     </a>
 
@@ -115,6 +115,12 @@ export default {
 </script>
 
 <style>
+.logo-pill {
+  background-color: #a10b0b;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
 .glass-pill {
   background-color: rgba(255, 255, 255, 0.55);
   -webkit-backdrop-filter: blur(18px) saturate(150%);
