@@ -1,51 +1,49 @@
 <template>
-  <nav :class="['z-50', { 'fixed top-0 left-0 right-0': mobileMenuOpen }]">
-    <div class="glass-bar mx-4 mt-3 px-5 py-3 rounded-2xl">
-      <div class="flex justify-between items-center">
-        <a href="/" class="text-xl font-bold text-gray-800 tracking-tight">PublicTransport.is</a>
+  <nav ref="navEl" :class="['navbar sticky top-0 z-50 px-4 pt-3', { 'fixed top-0 left-0 right-0': mobileMenuOpen }]">
+    <div class="navbar-bar flex items-center justify-between px-5 py-3 rounded-full">
+      <a href="/" class="text-xl font-bold text-gray-800 tracking-tight">PublicTransport.is</a>
 
-        <div class="hidden md:flex items-center space-x-1">
-          <a href="/about" class="nav-link">About</a>
-          <a href="/howtouse" class="nav-link">How to use</a>
+      <div class="hidden md:flex items-center space-x-1">
+        <a href="/about" class="nav-link">About</a>
+        <a href="/howtouse" class="nav-link">How to use</a>
 
-          <a v-if="infoLink" :href="infoLink.link_url" target="_blank" class="nav-link">
-            {{ infoLink.link_title }}
-          </a>
+        <a v-if="infoLink" :href="infoLink.link_url" target="_blank" class="nav-link">
+          {{ infoLink.link_title }}
+        </a>
 
-          <div class="relative" v-if="links.length > 0">
-            <button
-              @click="dropdownOpen = !dropdownOpen"
-              @blur="closeDropdownSoon"
-              class="nav-link flex items-center"
+        <div class="relative" v-if="links.length > 0">
+          <button
+            @click="dropdownOpen = !dropdownOpen"
+            @blur="closeDropdownSoon"
+            class="nav-link flex items-center"
+          >
+            {{ linksTitle }}
+            <span class="material-icons text-sm ml-1 text-gray-500">{{ dropdownOpen ? 'arrow_drop_up' : 'arrow_drop_down' }}</span>
+          </button>
+
+          <div v-if="dropdownOpen" class="absolute right-0 mt-2 w-48 glass-dropdown rounded-2xl py-1 z-[60]">
+            <a
+              v-for="(link, index) in links"
+              :key="index"
+              :href="link.file"
+              target="_blank"
+              class="block px-4 py-2 text-sm text-gray-700 hover:bg-white/40"
             >
-              {{ linksTitle }}
-              <span class="material-icons text-sm ml-1 text-gray-500">{{ dropdownOpen ? 'arrow_drop_up' : 'arrow_drop_down' }}</span>
-            </button>
-
-            <div v-if="dropdownOpen" class="absolute right-0 mt-2 w-48 glass-dropdown rounded-xl py-1 z-[60]">
-              <a
-                v-for="(link, index) in links"
-                :key="index"
-                :href="link.file"
-                target="_blank"
-                class="block px-4 py-2 text-sm text-gray-700 hover:bg-white/50"
-              >
-                {{ link.link_title }}
-              </a>
-            </div>
+              {{ link.link_title }}
+            </a>
           </div>
         </div>
+      </div>
 
-        <div class="md:hidden">
-          <button @click="mobileMenuOpen = !mobileMenuOpen" class="text-gray-600 focus:outline-none p-1">
-            <span class="material-icons">{{ mobileMenuOpen ? 'close' : 'menu' }}</span>
-          </button>
-        </div>
+      <div class="md:hidden">
+        <button @click="mobileMenuOpen = !mobileMenuOpen" class="text-gray-700 focus:outline-none p-1">
+          <span class="material-icons">{{ mobileMenuOpen ? 'close' : 'menu' }}</span>
+        </button>
       </div>
     </div>
 
     <!-- Mobile menu -->
-    <div v-if="mobileMenuOpen" class="md:hidden glass-bar mx-4 mt-1 rounded-2xl relative z-[100]">
+    <div v-if="mobileMenuOpen" class="md:hidden glass-dropdown mx-0 mt-1 rounded-2xl relative z-[100]">
       <div class="px-5 pt-4 pb-6">
         <div class="flex flex-col space-y-1">
           <a href="/" class="mobile-nav-link">Map</a>
@@ -78,12 +76,13 @@
 </template>
 
 <script>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import axios from 'axios'
 
 export default {
   name: 'Navbar',
   setup() {
+    const navEl = ref(null)
     const mobileMenuOpen = ref(false)
     const dropdownOpen = ref(false)
     const infoLink = ref(null)
@@ -91,9 +90,7 @@ export default {
     const linksTitle = ref('PDFs')
 
     const closeDropdownSoon = () => {
-      setTimeout(() => {
-        dropdownOpen.value = false
-      }, 200)
+      setTimeout(() => { dropdownOpen.value = false }, 200)
     }
 
     const fetchNavLinks = async () => {
@@ -107,40 +104,99 @@ export default {
       }
     }
 
+    // Scroll-driven: transparent → frosted glass, auto-hide on scroll-down
+    const SHOW_AT = 8
+    const HIDE_PAST = 80
+    const DIR_DELTA = 4
+    let lastY = 0
+    let ticking = false
+
+    const updateScroll = () => {
+      const el = navEl.value
+      if (!el) return
+      const y = window.scrollY
+      const dy = y - lastY
+      el.classList.toggle('is-scrolled', y > SHOW_AT)
+      if (y <= SHOW_AT) {
+        el.classList.remove('is-hidden')
+      } else if (dy > DIR_DELTA && y > HIDE_PAST) {
+        el.classList.add('is-hidden')
+      } else if (dy < -DIR_DELTA) {
+        el.classList.remove('is-hidden')
+      }
+      lastY = y
+      ticking = false
+    }
+
+    const onScroll = () => {
+      if (!ticking) {
+        ticking = true
+        requestAnimationFrame(updateScroll)
+      }
+    }
+
     onMounted(() => {
       fetchNavLinks()
+      lastY = window.scrollY
+      updateScroll()
+      window.addEventListener('scroll', onScroll, { passive: true })
     })
 
-    return { mobileMenuOpen, dropdownOpen, infoLink, links, linksTitle, closeDropdownSoon }
+    onUnmounted(() => {
+      window.removeEventListener('scroll', onScroll)
+    })
+
+    return { navEl, mobileMenuOpen, dropdownOpen, infoLink, links, linksTitle, closeDropdownSoon }
   }
 }
 </script>
 
 <style>
-.glass-bar {
-  background: rgba(255, 255, 255, 0.65);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08), 0 1px 4px rgba(0, 0, 0, 0.04);
+.navbar {
+  background-color: transparent;
+}
+
+.navbar-bar {
+  background-color: transparent;
+  transition:
+    background-color 220ms ease,
+    box-shadow 220ms ease,
+    backdrop-filter 220ms ease,
+    -webkit-backdrop-filter 220ms ease,
+    transform 620ms cubic-bezier(0.32, 0.72, 0, 1),
+    opacity 520ms cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.navbar.is-scrolled .navbar-bar {
+  background-color: rgba(255, 255, 255, 0.55);
+  -webkit-backdrop-filter: blur(18px) saturate(150%);
+  backdrop-filter: blur(18px) saturate(150%);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.07);
+}
+
+.navbar.is-hidden .navbar-bar {
+  transform: translateY(-160%);
+  opacity: 0;
 }
 
 .glass-dropdown {
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.6);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.10);
+  background: rgba(255, 255, 255, 0.75);
+  -webkit-backdrop-filter: blur(18px) saturate(150%);
+  backdrop-filter: blur(18px) saturate(150%);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.09);
 }
 
 .nav-link, .nav-link-btn {
-  position: relative;
   color: #374151;
   text-decoration: none;
   font-size: 0.9rem;
   padding: 0.35rem 0.65rem;
   border-radius: 999px;
   transition: background 0.2s ease, color 0.2s ease;
+  background: transparent;
+  border: none;
+  cursor: pointer;
 }
 
 .nav-link:hover, .nav-link-btn:hover {
