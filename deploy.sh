@@ -17,15 +17,13 @@ echo "→ Building..."
 npm run generate
 
 echo "→ Uploading to ${DEPLOY_USER}@${DEPLOY_HOST}:${DEPLOY_PATH}"
-if [ -n "${DEPLOY_PASSWORD:-}" ]; then
-  sshpass -p "$DEPLOY_PASSWORD" scp -r -P "$DEPLOY_PORT" \
-    .output/public/. \
-    "${DEPLOY_USER}@${DEPLOY_HOST}:${DEPLOY_PATH}"
-else
-  scp -r -P "$DEPLOY_PORT" \
-    ${DEPLOY_KEY:+-i "$DEPLOY_KEY"} \
-    .output/public/. \
-    "${DEPLOY_USER}@${DEPLOY_HOST}:${DEPLOY_PATH}"
-fi
+
+LFTP_PASS="${DEPLOY_PASSWORD:-}"
+lftp -u "${DEPLOY_USER},${LFTP_PASS}" "sftp://${DEPLOY_HOST}:${DEPLOY_PORT}" <<EOF
+set sftp:auto-confirm yes
+set net:max-retries 3
+mirror -R --delete --verbose .output/public/ ${DEPLOY_PATH}
+bye
+EOF
 
 echo "✓ Done"
