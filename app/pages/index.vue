@@ -93,13 +93,14 @@ export default {
     
     // Compute zoom level based on screen width
     const computedZoom = computed(() => {
-      // More zoomed out for mobile devices
       if (windowWidth.value < 480) {
-        return 1.8; // Significantly more zoomed out for phones
+        return 1.8;
       } else if (windowWidth.value < 768) {
-        return 2.0; // Slightly more zoomed out for tablets
+        return 2.0;
+      } else if (windowWidth.value < 1280) {
+        return 2.5;
       } else {
-        return 2.3; // Original zoom for desktops
+        return 2.8; // Large viewports — fill more of the screen
       }
     })
     
