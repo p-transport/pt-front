@@ -97,7 +97,7 @@ export default {
         return 1.8;
       } else if (windowWidth.value < 768) {
         return 2.0;
-      } else if (windowWidth.value < 1440) {
+      } else if (windowWidth.value < 1512) {
         return 2.3;
       } else {
         return 2.6; // Wide monitors — fill more of the screen
