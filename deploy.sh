@@ -17,9 +17,15 @@ echo "→ Building..."
 npm run generate
 
 echo "→ Uploading to ${DEPLOY_USER}@${DEPLOY_HOST}:${DEPLOY_PATH}"
-scp -r -P "$DEPLOY_PORT" \
-  ${DEPLOY_KEY:+-i "$DEPLOY_KEY"} \
-  .output/public/. \
-  "${DEPLOY_USER}@${DEPLOY_HOST}:${DEPLOY_PATH}"
+if [ -n "${DEPLOY_PASSWORD:-}" ]; then
+  sshpass -p "$DEPLOY_PASSWORD" scp -r -P "$DEPLOY_PORT" \
+    .output/public/. \
+    "${DEPLOY_USER}@${DEPLOY_HOST}:${DEPLOY_PATH}"
+else
+  scp -r -P "$DEPLOY_PORT" \
+    ${DEPLOY_KEY:+-i "$DEPLOY_KEY"} \
+    .output/public/. \
+    "${DEPLOY_USER}@${DEPLOY_HOST}:${DEPLOY_PATH}"
+fi
 
 echo "✓ Done"
