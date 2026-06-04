@@ -17,7 +17,7 @@
 
         <LControlZoom position="topright" />
         <LControlAttribution position="bottomright"
-                             prefix="&copy; 2025 Cartography: Hugarflug ehf / Ingi Gunnar Jóhannsson. Published by <a href='https://www.hjolafaerni.is' target='_blank'>Hjólafærni á Íslandi</a> – All rights reserved" />
+                             prefix="&copy; 2026 Cartography: Hugarflug ehf / Ingi Gunnar Jóhannsson. Published by <a href='https://www.hjolafaerni.is' target='_blank'>Hjólafærni á Íslandi</a> – All rights reserved" />
 
         <!-- Use the markers directly -->
         <template v-for="(marker, index) in markers" :key="index">
