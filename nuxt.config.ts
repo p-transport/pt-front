@@ -4,8 +4,6 @@ import { defineNuxtConfig } from 'nuxt/config'
 export default defineNuxtConfig({
   devtools: { enabled: true },
 
-  // SPA mode: every fetch is gated on onMounted anyway, and vue-leaflet
-  // reads window.L at module-evaluation time, which breaks under SSR.
   ssr: false,
 
   app: {
@@ -52,9 +50,8 @@ export default defineNuxtConfig({
   googleFonts: {
     families: {
       Inter: [400, 700, 900],
-      'Material Icons': true
     },
-    display: 'swap', // Recommended for performance
+    display: 'swap',
     subsets: ['latin', 'latin-ext'],
     download: false,
     prefetch: true,

@@ -8,49 +8,15 @@
   </div>
 </template>
 
-<script>
-import Navbar from '~/components/Navbar.vue'
-// Removed import for AdBanner
-
-export default {
-  components: {
-    Navbar,
-    // Removed AdBanner component
-  },
-  data() {
-    return {
-      windowWidth: 0
-    }
-  },
-  // Removed adBannerSize computed property
-  mounted() {
-    // Set initial window width
-    this.windowWidth = window.innerWidth;
-    
-    // Add event listener for window resize
-    window.addEventListener('resize', this.handleResize);
-  },
-  beforeDestroy() {
-    // Remove event listener when component is destroyed
-    window.removeEventListener('resize', this.handleResize);
-  },
-  methods: {
-    handleResize() {
-      this.windowWidth = window.innerWidth;
-    }
-  },
-  head() {
-    return {
-      meta: [
-        // Add viewport meta with viewport-fit=cover for iOS safe areas
-        { 
-          name: 'viewport', 
-          content: 'width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1.0, user-scalable=no'
-        }
-      ]
-    }
-  }
-}
+<script setup>
+useHead({
+  link: [
+    { rel: 'stylesheet', href: 'https://fonts.googleapis.com/icon?family=Material+Icons' }
+  ],
+  meta: [
+    { name: 'viewport', content: 'width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1.0, user-scalable=no' }
+  ]
+})
 </script>
 
 <style>
