@@ -1,20 +1,20 @@
 <template>
   <nav class="fixed top-0 left-0 right-0 z-50 px-4 pt-3 flex justify-between items-start pointer-events-none">
     <!-- Logo pill -->
-    <a href="/" class="logo-pill px-5 py-3 rounded-full pointer-events-auto text-xl text-white font-semibold no-underline">
+    <NuxtLink to="/" class="logo-pill px-5 py-3 rounded-full pointer-events-auto text-xl text-white font-semibold no-underline">
       PublicTransport.is
-    </a>
+    </NuxtLink>
 
     <!-- Links pill (desktop) + hamburger (mobile) -->
     <div class="relative pointer-events-auto">
       <div class="glass-pill px-2 py-2 rounded-full flex items-center space-x-1">
         <template v-if="!isMobile">
-          <a href="/about" class="nav-link">About</a>
-          <a href="/howtouse" class="nav-link">How to use</a>
+          <NuxtLink to="/about" class="nav-link">About</NuxtLink>
+          <NuxtLink to="/howtouse" class="nav-link">How to use</NuxtLink>
 
-          <a v-if="infoLink" :href="infoLink.link_url" target="_blank" class="nav-link">
+          <NuxtLink v-if="infoLink" :to="`/viewer?url=${encodeURIComponent(infoLink.link_url)}`" class="nav-link">
             {{ infoLink.link_title }}
-          </a>
+          </NuxtLink>
 
           <div class="relative" v-if="links.length > 0">
             <button
@@ -26,29 +26,32 @@
               <span class="material-icons text-sm ml-1 text-gray-500">{{ dropdownOpen ? 'arrow_drop_up' : 'arrow_drop_down' }}</span>
             </button>
             <div v-if="dropdownOpen" class="absolute right-0 mt-2 w-48 glass-pill rounded-2xl py-1 z-[60]">
-              <a
+              <NuxtLink
                 v-for="(link, index) in links"
                 :key="index"
-                :href="link.file"
-                target="_blank"
+                :to="`/viewer?url=${encodeURIComponent(link.file)}`"
                 class="block px-4 py-2 text-sm text-gray-700 hover:bg-white/40"
+                @click="dropdownOpen = false"
               >
                 {{ link.link_title }}
-              </a>
+              </NuxtLink>
             </div>
           </div>
         </template>
 
-        <button @click="mobileMenuOpen = !mobileMenuOpen" class="md:hidden text-gray-700 focus:outline-none p-1">
-          <span class="material-icons">{{ mobileMenuOpen ? 'close' : 'menu' }}</span>
+        <button @click="mobileMenuOpen = !mobileMenuOpen" class="md:hidden text-gray-700 focus:outline-none w-10 h-10 flex items-center justify-center rounded-full relative">
+          <Transition name="icon-fade" mode="out-in">
+            <span v-if="mobileMenuOpen" key="close" class="material-icons absolute">close</span>
+            <span v-else key="menu" class="material-icons absolute">menu</span>
+          </Transition>
         </button>
       </div>
 
       <!-- Mobile dropdown -->
       <div v-if="mobileMenuOpen" class="md:hidden absolute right-0 mt-2 w-56 glass-pill rounded-2xl py-2 z-[60]">
-        <a href="/" class="mobile-nav-link">Map</a>
-        <a href="/about" class="mobile-nav-link">About</a>
-        <a href="/howtouse" class="mobile-nav-link">How to use</a>
+        <NuxtLink to="/" class="mobile-nav-link">Map</NuxtLink>
+        <NuxtLink to="/about" class="mobile-nav-link">About</NuxtLink>
+        <NuxtLink to="/howtouse" class="mobile-nav-link">How to use</NuxtLink>
 
         <a v-if="infoLink" :href="infoLink.link_url" target="_blank" class="mobile-nav-link">
           {{ infoLink.link_title }}
@@ -58,15 +61,15 @@
           <div class="px-4 pt-2 pb-1 text-gray-400 text-xs font-semibold uppercase tracking-wider">
             {{ linksTitle }}
           </div>
-          <a
+          <NuxtLink
             v-for="(link, index) in links"
             :key="index"
-            :href="link.file"
-            target="_blank"
+            :to="`/viewer?url=${encodeURIComponent(link.file)}`"
             class="mobile-nav-link pl-6"
+            @click="mobileMenuOpen = false"
           >
             {{ link.link_title }}
-          </a>
+          </NuxtLink>
         </template>
       </div>
     </div>
@@ -160,5 +163,15 @@ export default {
 .mobile-nav-link:hover {
   background: rgba(0, 0, 0, 0.05);
   color: #111827;
+}
+
+.icon-fade-enter-active,
+.icon-fade-leave-active {
+  transition: opacity 0.1s ease;
+}
+
+.icon-fade-enter-from,
+.icon-fade-leave-to {
+  opacity: 0;
 }
 </style>
