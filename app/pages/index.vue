@@ -313,21 +313,20 @@ export default {
 <style>
 .map-container {
   position: absolute;
-  top: 52px; /* Adjusted from 56px to remove the gap */
+  top: 0;
   left: 0;
   right: 0;
-  bottom: 0; /* Extend to bottom of the screen */
+  bottom: 0;
   width: 100%;
-  height: calc(100vh - 52px); /* Full height minus navbar */
-  z-index: 5; /* Lower than navbar (50) */
+  height: 100vh;
+  z-index: 5;
   margin-top: 0;
 }
 
 @media (max-width: 768px) {
   .map-container {
-    /* Full height on mobile */
-    bottom: env(safe-area-inset-bottom, 0px); /* Only account for iOS safe area */
-    height: calc(100vh - 52px - env(safe-area-inset-bottom, 0px));
+    bottom: env(safe-area-inset-bottom, 0px);
+    height: calc(100vh - env(safe-area-inset-bottom, 0px));
   }
 }
 
