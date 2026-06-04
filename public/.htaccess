@@ -1,0 +1,13 @@
+# HTML must never be cached — stale HTML + deleted chunks = broken app on next deploy
+<FilesMatch "\.html$">
+    <IfModule mod_headers.c>
+        Header set Cache-Control "no-store"
+    </IfModule>
+</FilesMatch>
+
+# Hashed JS/CSS bundles can be cached forever (filename changes on every build)
+<FilesMatch "\.(js|css)$">
+    <IfModule mod_headers.c>
+        Header set Cache-Control "public, max-age=31536000, immutable"
+    </IfModule>
+</FilesMatch>
