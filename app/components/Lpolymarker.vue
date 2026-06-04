@@ -97,7 +97,8 @@
                                       <a :href="route.provider_url" target="_blank">{{ route.provider_title }}</a>
                                     </template>
                                     <template v-else>
-                                      <a href="https://wp.publictransport.is/wp-content/uploads/latest_en.pdf" target="_blank">{{ route.provider_title }} (PDF)</a>
+                                      <a v-if="operatorMapUrl" :href="operatorMapUrl" target="_blank">{{ route.provider_title }} (PDF)</a>
+                                      <span v-else>{{ route.provider_title }}</span>
                                     </template>
                                   </div>
                                 </div>
@@ -209,6 +210,10 @@ export default {
       default: 0.2
     }, 
     salesUrl: String,
+    operatorMapUrl: {
+      type: String,
+      default: ''
+    },
     debugMode: {
       type: Boolean,
       default: false

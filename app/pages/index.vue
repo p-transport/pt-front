@@ -32,6 +32,7 @@
             :radius="marker.radius || 10"
             :sales-url="marker.sales_url"
             :debug-mode="debugMode"
+            :operator-map-url="operatorMapUrl"
           />
         </template>
       </LMap>
@@ -78,6 +79,7 @@ export default {
   setup() {
     const map = ref(null)
     const markers = ref([])
+    const operatorMapUrl = ref('')
     const debugMode = ref(false) // Default debug mode to false
     const windowWidth = ref(0) // Track window width for responsive design
     
@@ -177,6 +179,19 @@ export default {
       }
     }
 
+    async function fetchOptions() {
+      try {
+        const response = await fetch('https://wp.publictransport.is/wp-json/pt/v1/options')
+        const data = await response.json()
+        if (data?.links && Array.isArray(data.links)) {
+          const enLink = data.links.find(l => l.file && l.file.includes('_en')) || data.links[0]
+          if (enLink?.file) operatorMapUrl.value = enLink.file
+        }
+      } catch (error) {
+        console.error('Error fetching options:', error)
+      }
+    }
+
     function onMapReady(mapObject) {
       console.log('Map is ready')
       map.value = mapObject
@@ -249,8 +264,8 @@ export default {
         }
       }
       
-      // Fetch markers after component is mounted
-      await fetchMarkers()
+      // Fetch markers and options after component is mounted
+      await Promise.all([fetchMarkers(), fetchOptions()])
       
       // Trigger resize event to ensure map renders correctly after a delay
       setTimeout(() => {
@@ -295,6 +310,7 @@ export default {
     return {
       map,
       markers,
+      operatorMapUrl,
       zoom,
       center,
       bounds,
