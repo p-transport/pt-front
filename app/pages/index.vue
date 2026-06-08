@@ -331,6 +331,10 @@ export default {
     bottom: env(safe-area-inset-bottom, 0px);
     height: calc(100vh - env(safe-area-inset-bottom, 0px));
   }
+
+  .leaflet-bottom {
+    padding-bottom: max(env(safe-area-inset-bottom, 40px), 40px);
+  }
 }
 
 .debug-indicator {
@@ -357,15 +361,13 @@ export default {
 /* Responsive styles for ad container */
 @media (max-width: 768px) {
   .floating-ad-container {
-    bottom: calc(40px + env(safe-area-inset-bottom, 0px)); /* Adjust for iOS safe area */
+    bottom: calc(40px + env(safe-area-inset-bottom, 0px));
   }
 }
 
 @media (max-width: 480px) {
   .floating-ad-container {
-    /* Switch to mobile banner size on very small screens */
-    width: 100%;
-    padding: 0 5px;
+    padding: 0 12px;
   }
 }
 </style>

@@ -105,4 +105,16 @@ export default {
   background: rgba(0, 0, 0, 0.06);
   color: #374151;
 }
+
+@media (max-width: 480px) {
+  .ad-pill {
+    max-width: calc(100vw - 80px);
+  }
+  .ad-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+    max-width: 110px;
+  }
+}
 </style>
