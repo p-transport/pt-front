@@ -4,7 +4,6 @@
       <LMap ref="map"
             :zoom="computedZoom"
             :center="computedCenter"
-            :bounds="bounds"
             :use-global-leaflet="true"
             :options="mapOptions"
             @ready="onMapReady">
@@ -19,12 +18,11 @@
         <LControlAttribution position="bottomright"
                              prefix="&copy; 2026 Cartography: Hugarflug ehf / Ingi Gunnar Jóhannsson. Published by <a href='https://www.hjolafaerni.is' target='_blank'>Hjólafærni á Íslandi</a> – All rights reserved" />
 
-        <!-- Use the markers directly -->
-        <template v-for="(marker, index) in markers" :key="index">
+        <template v-for="marker in parsedMarkers" :key="marker.slug">
           <Lpolymarker
             :title="marker.title"
             :slug="marker.slug"
-            :geojson="parsedGeoJson(marker.geojson)"
+            :geojson="marker._geojson"
             :color="marker.color || '#ff0000'"
             :opacity="debugMode ? 0.6 : 0"
             :fillOpacity="debugMode ? 0.4 : 0"
@@ -53,8 +51,7 @@
 </template>
 
 <script>
-import { ref, onMounted, reactive, markRaw, computed, onUnmounted } from 'vue'
-import axios from 'axios'
+import { ref, onMounted, markRaw, computed, onUnmounted } from 'vue'
 import {
   LMap,
   LImageOverlay,
@@ -81,11 +78,7 @@ export default {
     const markers = ref([])
     const operatorMapUrl = ref('')
     const debugMode = ref(false) // Default debug mode to false
-    const windowWidth = ref(0) // Track window width for responsive design
-    
-    // Map settings adjusted for Iceland SVG
-    const zoom = ref(2.3)
-    const center = ref([47.313220, -1.319482])
+    const windowWidth = ref(window.innerWidth)
     
     // Set bounds for Iceland SVG map - these should match your SVG bounds
     const bounds = ref([
@@ -121,11 +114,10 @@ export default {
       }
     })
     
-    // Map options with explicit attribution and zoom control settings
     const mapOptions = markRaw({
-      zoomControl: false, // We'll add this separately
-      attributionControl: false, // We'll add this separately
-      preferCanvas: false, // SVG renderer works better with imageOverlay
+      zoomControl: false,
+      attributionControl: false,
+      preferCanvas: false,
       zoomSnap: 0.1,
       maxZoom: 10,
       minZoom: 0
@@ -138,15 +130,6 @@ export default {
     let originalBodyOverflow = ''
     let originalBodyPosition = ''
     let originalBodyWidth = ''
-    
-    // Function to setup CRS.Simple when Leaflet is ready
-    function setupMapOptions(mapObject) {
-      if (mapObject && mapObject.leafletObject) {
-        // Set CRS to Simple after Leaflet is loaded
-        mapObject.leafletObject.options.crs = window.L.CRS.Simple
-        // console.log('Set CRS to Simple')
-      }
-    }
 
     // Function to parse GeoJSON safely
     function parsedGeoJson(geoJson) {
@@ -167,6 +150,10 @@ export default {
         return null
       }
     }
+
+    const parsedMarkers = computed(() =>
+      markers.value.map(m => ({ ...m, _geojson: parsedGeoJson(m.geojson) }))
+    )
 
     async function fetchMarkers() {
       try {
@@ -193,24 +180,10 @@ export default {
     }
 
     function onMapReady(mapObject) {
-      console.log('Map is ready')
       map.value = mapObject
-      
-      // You can interact with the map object here if needed
-      if (mapObject && mapObject.leafletObject) {
-        // Configure map settings including CRS
-        setupMapOptions(mapObject)
-        
-        // Set bounds
+      if (mapObject?.leafletObject) {
         mapObject.leafletObject.setMaxBounds(bounds.value)
-        
-        // Set initial view based on screen width
-        mapObject.leafletObject.setView(computedCenter.value, computedZoom.value, { animate: false });
-        
-        // Force a redraw of the map after a short delay
-        setTimeout(() => {
-          mapObject.leafletObject.invalidateSize()
-        }, 200)
+        mapObject.leafletObject.invalidateSize()
       }
     }
 
@@ -245,13 +218,7 @@ export default {
         document.body.style.width = '100%'
       }
       
-      // Set initial window width
-      if (typeof window !== 'undefined') {
-        windowWidth.value = window.innerWidth
-        
-        // Add resize listener for responsive design
-        window.addEventListener('resize', handleResize)
-      }
+      window.addEventListener('resize', handleResize)
       
       // Check for debug parameter in URL
       if (typeof window !== 'undefined') {
@@ -264,15 +231,7 @@ export default {
         }
       }
       
-      // Fetch markers and options after component is mounted
       await Promise.all([fetchMarkers(), fetchOptions()])
-      
-      // Trigger resize event to ensure map renders correctly after a delay
-      setTimeout(() => {
-        if (typeof window !== 'undefined' && window.dispatchEvent) {
-          window.dispatchEvent(new Event('resize'))
-        }
-      }, 500)
     })
     
     // Handle window resize
@@ -309,14 +268,11 @@ export default {
 
     return {
       map,
-      markers,
+      parsedMarkers,
       operatorMapUrl,
-      zoom,
-      center,
       bounds,
       mapOptions,
       debugMode,
-      parsedGeoJson,
       onMapReady,
       adBannerSize,
       computedZoom,
