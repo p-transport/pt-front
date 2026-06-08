@@ -6,6 +6,8 @@ export default defineNuxtConfig({
 
   ssr: false,
 
+  buildDir: 'node_modules/.cache/nuxt',
+
   app: {
     head: {
       title: 'PublicTransport.is',
