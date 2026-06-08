@@ -97,7 +97,7 @@ export default {
         return 1.8;
       } else if (windowWidth.value < 768) {
         return 2.0;
-      } else if (windowWidth.value < 1512) {
+      } else if (windowWidth.value < 1520) {
         return 2.3;
       } else if (windowWidth.value < 1600) {
         return 2.8;

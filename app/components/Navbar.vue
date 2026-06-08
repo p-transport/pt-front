@@ -77,7 +77,8 @@
 </template>
 
 <script>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
+import { useRoute } from 'vue-router'
 import axios from 'axios'
 
 export default {
@@ -104,6 +105,12 @@ export default {
         console.error('Error fetching navbar links:', error)
       }
     }
+
+    const route = useRoute()
+    watch(() => route.path, () => {
+      dropdownOpen.value = false
+      mobileMenuOpen.value = false
+    })
 
     onMounted(() => {
       fetchNavLinks()
