@@ -1,7 +1,7 @@
 <template>
-  <div class="container mx-auto px-4 py-8 mt-14">
+  <div class="page-bg min-h-screen px-4 pb-16 pt-24">
     <div class="max-w-5xl mx-auto">
-      <div class="bg-white p-6 rounded-lg shadow-sm">
+      <div class="bg-white p-8 lg:p-14 rounded-[2rem] shadow-sm">
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
           <!-- Main content -->
           <div class="lg:col-span-8">

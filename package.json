@@ -4,8 +4,11 @@
   "description": "Public Transport",
   "author": "Arnor Bogason",
   "private": true,
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
-    "build": "nuxt build",
+    "build": "mkdir -p node_modules/.cache/nuxt && nuxt build",
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",

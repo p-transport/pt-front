@@ -26,30 +26,30 @@
         <ClientOnly>
           <!-- Using a custom modal in Tailwind instead of b-modal -->
           <Teleport to="body">
-            <div v-if="modalShow" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50" @click.self="modalShow = false">
-              <div class="modal relative w-full max-w-4xl bg-white rounded-lg shadow-xl flex flex-col max-h-[70vh] md:max-h-[90vh] min-h-[20vh] overflow-hidden">
+            <div v-if="modalShow" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-overlay" @click.self="modalShow = false">
+              <div class="modal relative w-full max-w-4xl flex flex-col max-h-[70vh] md:max-h-[90vh] min-h-[60vh] overflow-hidden modal-glass">
                 <!-- Modal header -->
-                <div class="p-4 border-b shrink-0">
+                <div class="absolute top-0 left-0 right-0 px-6 pt-5 pb-10 modal-header-fade rounded-t-[2rem] z-10 pointer-events-none">
                   <div class="hgroup">
-                    <div class="ptitle text-gray-600">Transport to and from</div>
-                    <h1 class="text-2xl font-bold">{{ title }}</h1>
+                    <div class="ptitle">Transport to and from</div>
+                    <h1 class="text-2xl font-bold text-gray-900">{{ title }}</h1>
                   </div>
-                  <button class="absolute top-4 right-4 text-gray-400 hover:text-gray-600" @click="modalShow = false">
-                    <span class="material-icons">close</span>
+                  <button class="absolute top-5 right-5 w-11 h-11 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-700 transition-colors modal-close-btn pointer-events-auto" @click="modalShow = false">
+                    <span class="material-icons" style="font-size: 26px;">close</span>
                   </button>
                 </div>
 
                 <!-- Modal body - now scrollable -->
                 <div v-if="loading" class="p-6 flex-grow flex items-center justify-center">
                   <div class="text-center">
-                    <div class="animate-pulse bg-gray-200 rounded-full h-2.5 w-24 mx-auto mb-3"></div>
+                    <div class="animate-pulse bg-black/10 rounded-full h-2.5 w-24 mx-auto mb-3"></div>
                     <div class="text-sm text-gray-500">Loading routes…</div>
                   </div>
                 </div>
                 <div v-else-if="loadError" class="p-6 py-8 text-center text-sm text-red-600">
                   {{ loadError }}
                 </div>
-                <div v-else-if="hasResults" class="p-6 overflow-y-auto flex-grow">
+                <div v-else-if="hasResults" class="px-8 pt-28 pb-8 overflow-y-auto flex-grow modal-scroll" :class="{ 'pb-24': salesUrl }">
                   <section>
                     <div v-for="routes in results" :key="routes.id">
                       <div v-for="route in routes" :key="route.id" class="route">
@@ -69,17 +69,17 @@
                                 <div>
                                   <h2 class="routename">
                                     <template v-if="route.provider_status === 'partner' && route.sales_url">
-                                      <a :href="route.sales_url" 
-                                         @click="trackSalesClick('Route name', route.number, route.sales_url)" 
-                                         target="_blank" 
+                                      <a :href="route.sales_url"
+                                         @click="trackSalesClick('Route name', route.number, route.sales_url)"
+                                         target="_blank"
                                          class="hover:text-primary">
                                         {{ route.destinations.start_point }} - {{ route.destinations.end_point }}
                                         <span v-if="route.oneway === false"> - {{ route.destinations.start_point }}</span>
                                       </a>
                                     </template>
                                     <template v-else-if="route.provider_status === 'partner' || route.provider_url">
-                                      <a :href="route.provider_url" 
-                                         @click="trackSalesClick('Provider link', route.provider_title, route.provider_url)" 
+                                      <a :href="route.provider_url"
+                                         @click="trackSalesClick('Provider link', route.provider_title, route.provider_url)"
                                          target="_blank"
                                          class="hover:text-primary">
                                         {{ route.destinations.start_point }} - {{ route.destinations.end_point }}
@@ -109,7 +109,7 @@
                                  @click="trackSalesClick('Book now', route.number, route.sales_url)"
                                  :href="route.sales_url"
                                  target="_blank"
-                                 class="inline-block w-full sm:w-auto px-4 py-2 text-center border border-primary text-primary rounded hover:bg-primary hover:text-white transition-colors">
+                                 class="inline-block w-full sm:w-auto px-4 py-2 text-center bg-[#0066cc] text-white rounded-full text-sm font-semibold hover:bg-[#004f99] transition-colors">
                                  Book now
                               </a>
                             </div>
@@ -126,7 +126,7 @@
                    <a @click="trackSalesClick('Main sales link (No Results)', title, salesUrl)"
                       :href="salesUrl"
                       target="_blank"
-                      class="inline-block px-8 py-4 bg-primary text-white rounded font-bold text-lg hover:bg-blue-600 transition-colors">
+                      class="inline-block px-8 py-4 bg-[#0066cc] text-white rounded-full font-bold text-lg hover:bg-[#004f99] transition-colors">
                       Book Tours in and Around {{ title }}
                    </a>
                 </div>
@@ -135,12 +135,12 @@
                    <p class="text-gray-500">No transport routes or booking links available for {{ title }}.</p>
                 </div>
 
-                <!-- Modal footer - show only if there are results and a sales URL -->
-                <div v-if="hasResults && salesUrl" class="p-4 border-t mt-auto shrink-0">
+                <!-- Modal footer - floats over content at the bottom -->
+                <div v-if="hasResults && salesUrl" class="absolute bottom-0 left-0 right-0 px-6 pb-5 pt-10 modal-footer-fade rounded-b-[2rem] pointer-events-none">
                   <a @click="trackSalesClick('Main sales link', title, salesUrl)"
                      :href="salesUrl"
                      target="_blank"
-                     class="block w-full py-3 text-center bg-primary text-white rounded font-bold hover:bg-blue-600 transition-colors">
+                     class="block w-full py-3 text-center bg-[#0066cc] text-white rounded-full font-bold hover:bg-[#004f99] transition-colors pointer-events-auto">
                      Book Tours in and Around {{ title }}
                   </a>
                 </div>
@@ -405,6 +405,38 @@ export default {
 </script>
 
 <style>
+/* Overlay */
+.modal-overlay {
+  background-color: rgba(255, 255, 255, 0.4);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+}
+
+/* Glass card */
+.modal-glass {
+  background-color: rgba(255, 255, 255, 0.55);
+  -webkit-backdrop-filter: blur(18px) saturate(150%);
+  backdrop-filter: blur(18px) saturate(150%);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 2rem;
+}
+
+/* Floating header fade */
+.modal-header-fade {
+  background: linear-gradient(to top, rgba(255,255,255,0) 0%, rgba(255,255,255,0.85) 40%, rgba(255,255,255,0.95) 100%);
+}
+
+/* Floating footer fade */
+.modal-footer-fade {
+  background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0.85) 40%, rgba(255,255,255,0.95) 100%);
+}
+
+/* Close button */
+.modal-close-btn:hover {
+  background-color: rgba(0, 0, 0, 0.06);
+}
+
 .routeno {
   display: block;
   float: left;
@@ -417,7 +449,7 @@ export default {
   width: 40px;
   min-width: 40px;
   height: 36px;
-  border-radius: 4px;
+  border-radius: 0.5rem;
 }
 
 .routeno .material-icons {
@@ -427,6 +459,7 @@ export default {
 .routeinfo .routename {
   font-size: 1.05rem;
   margin-bottom: 0.25rem;
+  color: #111827;
 }
 
 .routeinfo .provider {
@@ -441,7 +474,7 @@ export default {
 .route {
   padding-bottom: 16px;
   margin-bottom: 16px;
-  border-bottom: 1px solid #dee2e6;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.07);
 }
 
 .hgroup {
@@ -450,56 +483,55 @@ export default {
 
 .hgroup h1 {
   font-weight: bold;
+  color: #111827;
 }
 
 .ptitle {
-  font-size: 16px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
+  color: #9ca3af;
 }
 
 /* Modal mobile styles */
 @media (max-width: 640px) {
-  /* Optimize for mobile view */
   .modal .routeinfo .routename {
     font-size: 0.95rem;
   }
-  
-  /* Smaller padding for modal content on mobile */
+
   .modal .p-6 {
     padding: 1rem;
   }
-  
-  /* Make book now button more prominent on mobile */
+
   .modal a.inline-block {
     margin-top: 0.5rem;
     width: 100%;
     padding: 0.5rem;
     text-align: center;
   }
-  
-  /* Stack content in mobile view */
+
   .modal .flex-col {
     display: flex;
     flex-direction: column;
   }
 }
 
-/* Styled scrollbar for the modal body */
-.overflow-y-auto::-webkit-scrollbar {
-  width: 6px;
+/* Subtle scrollbar matching the glass aesthetic */
+.modal-scroll::-webkit-scrollbar {
+  width: 4px;
 }
 
-.overflow-y-auto::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 3px;
+.modal-scroll::-webkit-scrollbar-track {
+  background: transparent;
 }
 
-.overflow-y-auto::-webkit-scrollbar-thumb {
-  background: #888;
-  border-radius: 3px;
+.modal-scroll::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 2px;
 }
 
-.overflow-y-auto::-webkit-scrollbar-thumb:hover {
-  background: #555;
+.modal-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.25);
 }
 </style>

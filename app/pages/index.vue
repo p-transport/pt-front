@@ -14,9 +14,9 @@
                        layer-type="base"
                        name="Public Transport Map" />
 
-        <LControlZoom position="topright" />
         <LControlAttribution position="bottomright"
                              prefix="&copy; 2026 Cartography: Hugarflug ehf / Ingi Gunnar Jóhannsson. Published by <a href='https://www.hjolafaerni.is' target='_blank'>Hjólafærni á Íslandi</a> – All rights reserved" />
+        <LControlZoom position="bottomright" />
 
         <template v-for="marker in parsedMarkers" :key="marker.slug">
           <Lpolymarker
@@ -88,13 +88,16 @@ export default {
     
     // Compute zoom level based on screen width
     const computedZoom = computed(() => {
-      // More zoomed out for mobile devices
       if (windowWidth.value < 480) {
-        return 1.8; // Significantly more zoomed out for phones
+        return 1.8;
       } else if (windowWidth.value < 768) {
-        return 2.0; // Slightly more zoomed out for tablets
+        return 2.0;
+      } else if (windowWidth.value < 1520) {
+        return 2.3;
+      } else if (windowWidth.value < 1600) {
+        return 2.8;
       } else {
-        return 2.3; // Original zoom for desktops
+        return 3.0; // Extra-wide monitors
       }
     })
     
@@ -285,21 +288,24 @@ export default {
 <style>
 .map-container {
   position: absolute;
-  top: 52px; /* Adjusted from 56px to remove the gap */
+  top: 0;
   left: 0;
   right: 0;
-  bottom: 0; /* Extend to bottom of the screen */
+  bottom: 0;
   width: 100%;
-  height: calc(100vh - 52px); /* Full height minus navbar */
-  z-index: 5; /* Lower than navbar (50) */
+  height: 100vh;
+  z-index: 5;
   margin-top: 0;
 }
 
 @media (max-width: 768px) {
   .map-container {
-    /* Full height on mobile */
-    bottom: env(safe-area-inset-bottom, 0px); /* Only account for iOS safe area */
-    height: calc(100vh - 52px - env(safe-area-inset-bottom, 0px));
+    bottom: env(safe-area-inset-bottom, 0px);
+    height: calc(100vh - env(safe-area-inset-bottom, 0px));
+  }
+
+  .leaflet-bottom {
+    padding-bottom: max(env(safe-area-inset-bottom, 40px), 40px);
   }
 }
 
@@ -327,15 +333,13 @@ export default {
 /* Responsive styles for ad container */
 @media (max-width: 768px) {
   .floating-ad-container {
-    bottom: calc(40px + env(safe-area-inset-bottom, 0px)); /* Adjust for iOS safe area */
+    bottom: calc(40px + env(safe-area-inset-bottom, 0px));
   }
 }
 
 @media (max-width: 480px) {
   .floating-ad-container {
-    /* Switch to mobile banner size on very small screens */
-    width: 100%;
-    padding: 0 5px;
+    padding: 0 12px;
   }
 }
 </style>

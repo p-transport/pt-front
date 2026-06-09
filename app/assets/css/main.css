@@ -78,6 +78,12 @@
   border-bottom: 1px solid #dee2e6;
 }
 
+/* Subpage background — matches the map's leaflet container color */
+.page-bg {
+  background-color: #E3E3E3;
+  min-height: 100vh;
+}
+
 /* Content page styling */
 .prose p {
   margin-bottom: 1.25em;
