@@ -82,8 +82,8 @@ export default {
     
     // Set bounds for Iceland SVG map - these should match your SVG bounds
     const bounds = ref([
-      [83.287664, -159.522857], 
-      [-44.391598, 149.762878]
+      [83.8, -157.5],
+      [-44.7, 147.8]
     ])
     
     // Compute zoom level based on screen width
