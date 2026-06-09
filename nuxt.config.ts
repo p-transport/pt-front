@@ -10,6 +10,7 @@ export default defineNuxtConfig({
 
   app: {
     head: {
+      htmlAttrs: { lang: 'en' },
       title: 'PublicTransport.is',
       meta: [
         { charset: 'utf-8' },
