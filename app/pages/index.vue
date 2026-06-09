@@ -31,6 +31,7 @@
             :sales-url="marker.sales_url"
             :debug-mode="debugMode"
             :operator-map-url="operatorMapUrl"
+            :intro-delay="marker.introDelay"
           />
         </template>
       </LMap>
@@ -154,9 +155,38 @@ export default {
       }
     }
 
-    const parsedMarkers = computed(() =>
-      markers.value.map(m => ({ ...m, _geojson: parsedGeoJson(m.geojson) }))
-    )
+    function nwToSeScore(geojson) {
+      if (!geojson) return 0.5
+      try {
+        const coords = []
+        function collect(c) {
+          if (typeof c[0] === 'number') coords.push(c)
+          else c.forEach(collect)
+        }
+        const geom = geojson.geometry || geojson
+        if (geom?.coordinates) collect(geom.coordinates)
+        if (!coords.length) return 0.5
+        const avgLng = coords.reduce((s, c) => s + c[0], 0) / coords.length
+        const avgLat = coords.reduce((s, c) => s + c[1], 0) / coords.length
+        // Iceland: lat 63–67°N, lng –24 to –13°E; NW→SE increases
+        const normLng = (avgLng + 24) / 11
+        const normLat = (67 - avgLat) / 4
+        return Math.max(0, Math.min(1, (normLng + normLat) / 2))
+      } catch (e) {
+        return 0.5
+      }
+    }
+
+    const parsedMarkers = computed(() => {
+      const withGeo = markers.value.map(m => ({ ...m, _geojson: parsedGeoJson(m.geojson) }))
+      const scored = withGeo.map(m => ({ ...m, _score: nwToSeScore(m._geojson) }))
+      scored.sort((a, b) => a._score - b._score)
+      const n = scored.length
+      return scored.map((m, i) => ({
+        ...m,
+        introDelay: n > 1 ? (i / (n - 1)) * 0.2 : 0
+      }))
+    })
 
     async function fetchMarkers() {
       try {

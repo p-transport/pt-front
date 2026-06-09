@@ -6,6 +6,7 @@
                   :geojson="safeGeoJson"
                   :options-style="styleFunction"
                   @click="markerClick('Marker','Click',title)"
+                  @ready="onLayerReady"
                 />
             </template>
             <template v-else>
@@ -217,6 +218,10 @@ export default {
     debugMode: {
       type: Boolean,
       default: false
+    },
+    introDelay: {
+      type: Number,
+      default: 0.5
     }
   },
   
@@ -365,16 +370,105 @@ export default {
 
     // Use markRaw for the style function to prevent reactivity issues
     const styleFunction = computed(() => {
-      return markRaw(() => {
-        return {
-          weight: props.weight || 2,
-          color: props.color || "#ECEFF1",
-          opacity: props.debugMode ? (props.opacity || 0.8) : 0,
-          fillColor: props.color || "#0000ff",
-          fillOpacity: props.debugMode ? (props.fillOpacity || 0.5) : 0
-        }
-      })
+      return markRaw(() => ({
+        weight: props.weight || 2,
+        color: props.color || "#ECEFF1",
+        opacity: props.debugMode ? (props.opacity || 0.8) : 0,
+        fillColor: props.color || "#0000ff",
+        fillOpacity: props.debugMode ? (props.fillOpacity || 0.5) : 0,
+        className: '' // animation class applied to <g> wrapper in onLayerReady
+      }))
     })
+
+    // Spacey hue palette mapped across the NW→SE delay range (0.2s–2.2s)
+    const hueStops = [268, 275, 260, 280, 255, 270, 262, 272]
+    function delayToHue(delay) {
+      const t = Math.max(0, Math.min(1, delay / 0.2))
+      const idx = t * (hueStops.length - 1)
+      const lo = Math.floor(idx)
+      const hi = Math.min(hueStops.length - 1, lo + 1)
+      return Math.round(hueStops[lo] + (hueStops[hi] - hueStops[lo]) * (idx - lo))
+    }
+
+    function onLayerReady(layer) {
+      if (props.debugMode) return
+      const delay = props.introDelay ?? 0.5
+      const hue = delayToHue(delay)
+      const ns = 'http://www.w3.org/2000/svg'
+      const allAnims = []
+
+      layer.eachLayer(l => {
+        const el = l.getElement?.()
+        if (!el?.parentNode) return
+
+        const svg = el.closest('svg')
+        if (!svg) return
+
+        // Ensure <defs> exists in the Leaflet SVG
+        let defs = svg.querySelector('defs')
+        if (!defs) {
+          defs = document.createElementNS(ns, 'defs')
+          svg.insertBefore(defs, svg.firstChild)
+        }
+
+        // SVG filter with explicit large region — prevents Safari from clipping blur to bbox
+        const fid = `pf-${props.slug}`
+        if (!defs.querySelector(`#${fid}`)) {
+          const filter = document.createElementNS(ns, 'filter')
+          filter.id = fid
+          filter.setAttribute('x', '-100%')
+          filter.setAttribute('y', '-100%')
+          filter.setAttribute('width', '300%')
+          filter.setAttribute('height', '300%')
+          const feBlur = document.createElementNS(ns, 'feGaussianBlur')
+          feBlur.setAttribute('in', 'SourceGraphic')
+          feBlur.setAttribute('stdDeviation', '40')
+          const blurAnim = document.createElementNS(ns, 'animate')
+          blurAnim.setAttribute('attributeName', 'stdDeviation')
+          blurAnim.setAttribute('values', '40;22;16;16;30;44')
+          blurAnim.setAttribute('keyTimes', '0;0.2;0.4;0.58;0.78;1')
+          blurAnim.setAttribute('dur', '1.8s')
+          blurAnim.setAttribute('begin', 'indefinite')
+          blurAnim.setAttribute('fill', 'freeze')
+          blurAnim.setAttribute('calcMode', 'spline')
+          blurAnim.setAttribute('keySplines', '0.45 0 0.55 1;0.45 0 0.55 1;0.45 0 0.55 1;0.45 0 0.55 1;0.45 0 0.55 1')
+          feBlur.appendChild(blurAnim)
+          filter.appendChild(feBlur)
+          defs.appendChild(filter)
+          allAnims.push(blurAnim)
+        }
+
+        // Wrap path in <g>, apply SVG filter; start invisible so no flash before SMIL fires
+        const g = document.createElementNS(ns, 'g')
+        el.parentNode.insertBefore(g, el)
+        g.appendChild(el)
+        g.setAttribute('filter', `url(#${fid})`)
+        g.setAttribute('opacity', '0')
+
+        // SMIL opacity animation on the group
+        const opacAnim = document.createElementNS(ns, 'animate')
+        opacAnim.setAttribute('attributeName', 'opacity')
+        opacAnim.setAttribute('values', '0;0.55;0.9;0.82;0.28;0')
+        opacAnim.setAttribute('keyTimes', '0;0.2;0.4;0.58;0.78;1')
+        opacAnim.setAttribute('dur', '1.8s')
+        opacAnim.setAttribute('begin', 'indefinite')
+        opacAnim.setAttribute('fill', 'freeze')
+        opacAnim.setAttribute('calcMode', 'spline')
+        opacAnim.setAttribute('keySplines', '0.45 0 0.55 1;0.45 0 0.55 1;0.45 0 0.55 1;0.45 0 0.55 1;0.45 0 0.55 1')
+        g.appendChild(opacAnim)
+        allAnims.push(opacAnim)
+
+        // Set fill via inline style — overrides Leaflet's SVG presentation attributes
+        el.style.fill = `hsl(${hue}, 80%, 52%)`
+        el.style.fillOpacity = '0.75'
+        el.style.strokeWidth = '0'
+      })
+
+      // Trigger all SMIL animations after the stagger delay
+      setTimeout(() => {
+        allAnims.forEach(a => { try { a.beginElement() } catch (e) {} })
+      }, delay * 1000)
+    }
     
     return {
       fillColor,
@@ -384,6 +478,7 @@ export default {
       loadError,
       markerClick,
       styleFunction,
+      onLayerReady,
       safeGeoJson,
       markerPosition,
       trackSalesClick,
@@ -405,6 +500,15 @@ export default {
 </script>
 
 <style>
+/* Polygon intro animation — SMIL-driven (blur + opacity) for correct Safari blur edges.
+   Fill, stroke, and filter are applied via JS in onLayerReady. */
+
+/* Allow blur to spill outside the SVG viewport in Safari */
+.leaflet-overlay-pane svg,
+.leaflet-overlay-pane svg g {
+  overflow: visible;
+}
+
 /* Overlay */
 .modal-overlay {
   background-color: rgba(255, 255, 255, 0.4);
