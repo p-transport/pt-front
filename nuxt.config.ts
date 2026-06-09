@@ -40,7 +40,7 @@ export default defineNuxtConfig({
             '#page-loader{position:fixed;inset:0;background:#E3E3E3;display:flex;align-items:center;justify-content:center;z-index:9999;transition:opacity .4s ease}',
             '#page-loader.out{opacity:0;pointer-events:none}',
             '@keyframes pl-spin{to{transform:rotate(360deg)}}',
-            '#page-loader-ring{width:44px;height:44px;border:3px solid rgba(0,157,224,.15);border-top-color:#009de0;border-radius:50%;animation:pl-spin .75s linear infinite}',
+            '#page-loader-ring{width:144px;height:144px;border:6px solid rgba(0,157,224,.15);border-top-color:#009de0;border-radius:50%;animation:pl-spin .75s linear infinite}',
           ].join('')
         }
       ],
