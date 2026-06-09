@@ -8,7 +8,7 @@
             :options="mapOptions"
             @ready="onMapReady">
         <!-- SVG image overlay basemap (CRS.Simple, not geographic tiles) -->
-        <LImageOverlay url="/pt20240711_en.svg"
+        <LImageOverlay url="/pt20260609_en.svg"
                        :bounds="bounds"
                        :opacity="1"
                        layer-type="base"
