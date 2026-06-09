@@ -32,6 +32,22 @@ export default defineNuxtConfig({
       link: [
         { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
         { rel: 'preload', href: '/pt20260609_en.svg', as: 'image', type: 'image/svg+xml' },
+      ],
+      style: [
+        {
+          innerHTML: [
+            'html{background-color:#E3E3E3}',
+            '#page-loader{position:fixed;inset:0;background:#E3E3E3;display:flex;align-items:center;justify-content:center;z-index:9999;transition:opacity .4s ease}',
+            '#page-loader.out{opacity:0;pointer-events:none}',
+            '@keyframes pl-spin{to{transform:rotate(360deg)}}',
+            '#page-loader-ring{width:44px;height:44px;border:3px solid rgba(0,157,224,.15);border-top-color:#009de0;border-radius:50%;animation:pl-spin .75s linear infinite}',
+          ].join('')
+        }
+      ],
+      script: [
+        {
+          innerHTML: '(function(){function mk(){var d=document.createElement("div");d.id="page-loader";var r=document.createElement("div");r.id="page-loader-ring";d.appendChild(r);document.body.appendChild(d);}if(document.body)mk();else document.addEventListener("DOMContentLoaded",mk);})();'
+        }
       ]
     }
   },
