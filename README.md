@@ -1,6 +1,6 @@
 # PublicTransport.is
 
-Interactive map of Iceland's public-transport routes. Built with Nuxt 3 and Leaflet.
+Interactive map of Iceland's public-transport routes. Built with Nuxt 4 and Leaflet.
 
 ## Getting started
 
