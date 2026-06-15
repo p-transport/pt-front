@@ -7,7 +7,7 @@
       </NuxtLink>
       <Transition name="back-btn">
         <NuxtLink v-if="isSubpage" to="/" class="glass-pill rounded-full pointer-events-auto flex items-center justify-center w-[52px] h-[52px]">
-          <span class="material-icons text-gray-700" style="font-size:36px">chevron_left</span>
+          <span class="material-icons text-gray-700" style="font-size:2.25rem">chevron_left</span>
         </NuxtLink>
       </Transition>
     </div>
@@ -16,8 +16,8 @@
     <div class="relative pointer-events-auto">
       <div class="glass-pill px-2 py-2 rounded-full flex items-center space-x-1">
         <template v-if="!isMobile">
-          <NuxtLink to="/about" class="nav-link">About</NuxtLink>
-          <NuxtLink to="/howtouse" class="nav-link">How to use</NuxtLink>
+          <NuxtLink to="/about" class="nav-link" :class="{ 'nav-link--active': route.path === '/about' }">About</NuxtLink>
+          <NuxtLink to="/howtouse" class="nav-link" :class="{ 'nav-link--active': route.path === '/howtouse' }">How to use</NuxtLink>
 
           <NuxtLink v-if="infoLink" :to="`/viewer?url=${encodeURIComponent(infoLink.link_url)}`" class="nav-link">
             {{ infoLink.link_title }}
@@ -57,8 +57,8 @@
       <!-- Mobile dropdown -->
       <div v-if="mobileMenuOpen" class="md:hidden absolute right-0 mt-2 w-56 glass-pill rounded-2xl py-2 z-[60]">
         <NuxtLink to="/" class="mobile-nav-link">Map</NuxtLink>
-        <NuxtLink to="/about" class="mobile-nav-link">About</NuxtLink>
-        <NuxtLink to="/howtouse" class="mobile-nav-link">How to use</NuxtLink>
+        <NuxtLink to="/about" class="mobile-nav-link" :class="{ 'mobile-nav-link--active': route.path === '/about' }">About</NuxtLink>
+        <NuxtLink to="/howtouse" class="mobile-nav-link" :class="{ 'mobile-nav-link--active': route.path === '/howtouse' }">How to use</NuxtLink>
 
         <a v-if="infoLink" :href="infoLink.link_url" target="_blank" class="mobile-nav-link">
           {{ infoLink.link_title }}
@@ -127,7 +127,7 @@ export default {
       mq.addEventListener('change', (e) => { isMobile.value = e.matches })
     })
 
-    return { mobileMenuOpen, dropdownOpen, infoLink, links, linksTitle, isMobile, closeDropdownSoon, isSubpage }
+    return { mobileMenuOpen, dropdownOpen, infoLink, links, linksTitle, isMobile, closeDropdownSoon, isSubpage, route }
   }
 }
 </script>
@@ -165,6 +165,12 @@ export default {
   color: #111827;
 }
 
+.nav-link--active {
+  background: rgba(0, 0, 0, 0.09);
+  color: #111827;
+  font-weight: 600;
+}
+
 .mobile-nav-link {
   display: block;
   padding: 0.5rem 1rem;
@@ -178,6 +184,12 @@ export default {
 .mobile-nav-link:hover {
   background: rgba(0, 0, 0, 0.05);
   color: #111827;
+}
+
+.mobile-nav-link--active {
+  background: rgba(0, 0, 0, 0.07);
+  color: #111827;
+  font-weight: 600;
 }
 
 .icon-fade-enter-active,
