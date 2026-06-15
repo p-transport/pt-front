@@ -17,14 +17,6 @@
   background-color: #E3E3E3;
 }
 
-.provider-color {
-  width: 20%;
-  height: 3px;
-  background-color: #009de0;
-  display: block;
-  border-radius: 1.5px;
-}
-
 /* Modal styles */
 .modal .hgroup {
   padding-top: 4px;

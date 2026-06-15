@@ -53,7 +53,7 @@ export default {
 
 .ad-icon {
   font-size: 1.2rem;
-  color: #009de0;
+  color: var(--primary);
   flex-shrink: 0;
 }
 

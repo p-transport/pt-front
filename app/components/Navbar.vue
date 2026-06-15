@@ -6,8 +6,8 @@
         PublicTransport.is
       </NuxtLink>
       <Transition name="back-btn">
-        <NuxtLink v-if="isSubpage" to="/" class="glass-pill p-3 rounded-2xl pointer-events-auto flex items-center justify-center">
-          <span class="material-icons text-gray-700" style="font-size:22px">chevron_left</span>
+        <NuxtLink v-if="isSubpage" to="/" class="glass-pill rounded-full pointer-events-auto flex items-center justify-center w-[52px] h-[52px]">
+          <span class="material-icons text-gray-700" style="font-size:36px">chevron_left</span>
         </NuxtLink>
       </Transition>
     </div>
