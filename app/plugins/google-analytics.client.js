@@ -2,54 +2,57 @@
 export default defineNuxtPlugin((nuxtApp) => {
   const runtimeConfig = useRuntimeConfig()
   const measurementId = runtimeConfig.public.googleAnalyticsMeasurementId
+  const isValidId = /^G-[A-Z0-9]+$/i.test(measurementId)
 
-  // Only load on client-side and if a valid measurement ID is provided
-  // Valid Google Analytics 4 IDs start with G- followed by alphanumeric characters
-  const isValidId = /^G-[A-Z0-9]+$/i.test(measurementId);
-
-  if (process.client && measurementId && isValidId) {
-    // Load the Google Analytics script
-    function loadGoogleAnalytics() {
-      const script = document.createElement('script')
-      script.async = true
-      script.src = 'https://www.googletagmanager.com/gtag/js?id=' + measurementId;
-      document.head.appendChild(script)
-      
-      window.dataLayer = window.dataLayer || []
-      function gtag() {
-        window.dataLayer.push(arguments)
-      }
-      
-      gtag('js', new Date())
-      gtag('config', measurementId)
-      
-      // Make gtag available globally
-      window.gtag = gtag
-      
-      return gtag
-    }
-    
-    // Defer loading until DOM is ready
-    document.addEventListener('DOMContentLoaded', () => {
-      // Initialize GA
-      const gtag = loadGoogleAnalytics()
-      
-      // Add to Vue context
-      nuxtApp.provide('gtag', (event, action, params = {}) => {
-        if (window.gtag) {
-          // console.log('Tracking event:', event, action, params) // Keep original commented log if desired, or remove
-          window.gtag('event', event, {
-            action: action,
-            ...params
-          })
-        }
-      })
-    });
-  } else {
-    // Provide a dummy function when GA is not loaded
+  if (!process.client || !measurementId || !isValidId) {
     nuxtApp.provide('gtag', () => {
-      // Do nothing in SSR or when no measurement ID is available
-      console.log('Google Analytics not loaded: Invalid or missing measurement ID') // Restore original log message
+      console.log('Google Analytics not loaded: Invalid or missing measurement ID')
     })
+    return
   }
-}) 
+
+  let initialized = false
+
+  function loadGoogleAnalytics() {
+    if (initialized) return
+    initialized = true
+
+    const script = document.createElement('script')
+    script.async = true
+    script.src = 'https://www.googletagmanager.com/gtag/js?id=' + measurementId
+    document.head.appendChild(script)
+
+    window.dataLayer = window.dataLayer || []
+    function gtag() { window.dataLayer.push(arguments) }
+    gtag('js', new Date())
+    gtag('config', measurementId)
+    window.gtag = gtag
+  }
+
+  // Provide $gtag — works whether GA loaded or not (gtag buffers via dataLayer)
+  nuxtApp.provide('gtag', (event, action, params = {}) => {
+    if (window.gtag) {
+      window.gtag('event', event, { action, ...params })
+    }
+  })
+
+  // Init GA now if consent already given, otherwise wait for the banner event
+  const initIfConsented = () => {
+    if (localStorage.getItem('cookie_consent') === 'accepted') {
+      loadGoogleAnalytics()
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initIfConsented)
+  } else {
+    initIfConsented()
+  }
+
+  // Verify localStorage before acting — prevents spoofed events from bypassing consent
+  window.addEventListener('cookie-consent-accepted', () => {
+    if (localStorage.getItem('cookie_consent') === 'accepted') {
+      loadGoogleAnalytics()
+    }
+  })
+})
