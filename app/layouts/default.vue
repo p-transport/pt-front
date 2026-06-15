@@ -4,11 +4,12 @@
     <main class="m-0 p-0 flex-grow">
       <slot />
     </main>
-    <!-- Footer container and ad banner removed -->
+    <CookieBanner />
   </div>
 </template>
 
 <script setup>
+import CookieBanner from '~/components/CookieBanner.vue'
 useHead({
   link: [
     { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
