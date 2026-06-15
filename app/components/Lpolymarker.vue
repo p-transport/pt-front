@@ -158,6 +158,8 @@ import { ref, computed, watch, shallowRef, markRaw } from 'vue'
 import { useNuxtApp } from '#app'
 import { LGeoJson, LCircleMarker } from '@vue-leaflet/vue-leaflet'
 
+const INTRO_ANIMATION_ENABLED = false
+
 export default {
   name: 'Lpolymarker',
   components: {
@@ -391,7 +393,7 @@ export default {
     }
 
     function onLayerReady(layer) {
-      if (props.debugMode) return
+      if (!INTRO_ANIMATION_ENABLED || props.debugMode) return
       const delay = props.introDelay ?? 0.5
       const hue = delayToHue(delay)
       const ns = 'http://www.w3.org/2000/svg'
