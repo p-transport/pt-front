@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-screen flex flex-col">
     <Navbar />
-    <main class="m-0 p-0 flex-grow">
+    <main class="m-0 p-0 flex-grow bg-white">
       <slot />
     </main>
     <CookieBanner />
@@ -10,6 +10,15 @@
 
 <script setup>
 import CookieBanner from '~/components/CookieBanner.vue'
+
+const wp434 = useWpContent(434)
+const wp484 = useWpContent(484)
+
+onMounted(() => {
+  wp434.load()
+  wp484.load()
+})
+
 useHead({
   link: [
     { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
@@ -78,4 +87,16 @@ body, html {
 }
 
 /* Removed footer-container and footer-ad styles */
+
+/* Page transitions — fade to white between routes */
+.page-leave-active {
+  transition: opacity 0.18s ease;
+}
+.page-enter-active {
+  transition: opacity 0.25s ease;
+}
+.page-enter-from,
+.page-leave-to {
+  opacity: 0;
+}
 </style>

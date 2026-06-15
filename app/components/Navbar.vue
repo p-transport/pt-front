@@ -1,9 +1,16 @@
 <template>
   <nav class="fixed top-0 left-0 right-0 z-50 px-4 pt-3 flex justify-between items-start pointer-events-none">
-    <!-- Logo pill -->
-    <NuxtLink to="/" class="logo-pill px-5 py-3 rounded-full pointer-events-auto text-xl text-white font-semibold no-underline">
-      PublicTransport.is
-    </NuxtLink>
+    <!-- Logo + back button -->
+    <div class="flex items-center gap-2">
+      <NuxtLink to="/" class="logo-pill px-5 py-3 rounded-full pointer-events-auto text-xl text-white font-semibold no-underline">
+        PublicTransport.is
+      </NuxtLink>
+      <Transition name="back-btn">
+        <NuxtLink v-if="isSubpage" to="/" class="glass-pill p-3 rounded-2xl pointer-events-auto flex items-center justify-center">
+          <span class="material-icons text-gray-700" style="font-size:22px">chevron_left</span>
+        </NuxtLink>
+      </Transition>
+    </div>
 
     <!-- Links pill (desktop) + hamburger (mobile) -->
     <div class="relative pointer-events-auto">
@@ -107,6 +114,7 @@ export default {
     }
 
     const route = useRoute()
+    const isSubpage = computed(() => route.path !== '/')
     watch(() => route.path, () => {
       dropdownOpen.value = false
       mobileMenuOpen.value = false
@@ -119,7 +127,7 @@ export default {
       mq.addEventListener('change', (e) => { isMobile.value = e.matches })
     })
 
-    return { mobileMenuOpen, dropdownOpen, infoLink, links, linksTitle, isMobile, closeDropdownSoon }
+    return { mobileMenuOpen, dropdownOpen, infoLink, links, linksTitle, isMobile, closeDropdownSoon, isSubpage }
   }
 }
 </script>
@@ -180,5 +188,16 @@ export default {
 .icon-fade-enter-from,
 .icon-fade-leave-to {
   opacity: 0;
+}
+
+.back-btn-enter-active,
+.back-btn-leave-active {
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.back-btn-enter-from,
+.back-btn-leave-to {
+  opacity: 0;
+  transform: translateX(-6px);
 }
 </style>

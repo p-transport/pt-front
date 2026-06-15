@@ -9,6 +9,7 @@ export default defineNuxtConfig({
   buildDir: 'node_modules/.cache/nuxt',
 
   app: {
+    pageTransition: { name: 'page', mode: 'out-in' },
     head: {
       htmlAttrs: { lang: 'en' },
       title: 'PublicTransport.is',

@@ -1,39 +1,17 @@
 <template>
   <div class="page-bg min-h-screen px-4 pb-16 pt-24">
-    <div class="max-w-5xl mx-auto">
-      <div class="bg-white p-8 lg:p-14 rounded-[2rem] shadow-sm">
-        <div class="grid grid-cols-1 gap-8">
-          <div>
-            <h1 class="text-3xl font-bold mb-6">How to use</h1>
-            <div class="prose prose-lg max-w-none" v-html="results.rendered"></div>
-          </div>
-        </div>
+    <div class="max-w-3xl mx-auto">
+      <div class="bg-white p-8 lg:p-12 rounded-[2rem] shadow-sm">
+        <h1 class="text-3xl font-bold mb-6">How to use</h1>
+        <div class="prose prose-lg max-w-none" v-html="content"></div>
       </div>
     </div>
   </div>
 </template>
 
-<script>
-import axios from 'axios';
-
-export default {
-  data() {
-    return {
-      results: {
-        rendered: ''
-      }
-    }
-  },
-  mounted() {
-    axios.get('https://wp.publictransport.is/wp-json/wp/v2/pages/484')
-      .then(response => {
-        this.results = response.data.content
-      })
-      .catch(error => {
-        console.error('Error fetching page content:', error)
-      })
-  }
-}
+<script setup>
+const { content, load } = useWpContent(484)
+onMounted(load)
 </script>
 
 <style>
@@ -42,4 +20,3 @@ export default {
   height: auto;
 }
 </style>
-

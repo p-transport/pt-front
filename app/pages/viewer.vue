@@ -8,6 +8,7 @@
 </template>
 
 <script setup>
+definePageMeta({ pageTransition: false })
 const route = useRoute()
 const url = computed(() => route.query.url || null)
 </script>
