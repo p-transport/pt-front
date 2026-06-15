@@ -16,6 +16,12 @@
         </div>
       </div>
     </Transition>
+
+    <Transition name="cookie-slide">
+      <NuxtLink v-if="!visible && settled" to="/cookies" class="cookie-settings-btn" aria-label="Cookie settings">
+        <span class="material-icons" style="font-size:18px;color:#8B5E3C;">cookie</span>
+      </NuxtLink>
+    </Transition>
   </Teleport>
 </template>
 
@@ -28,25 +34,30 @@ export default {
   name: 'CookieBanner',
   setup() {
     const visible = ref(false)
+    const settled = ref(false) // true once a choice has been stored
 
     onMounted(() => {
       if (!localStorage.getItem(STORAGE_KEY)) {
         visible.value = true
+      } else {
+        settled.value = true
       }
     })
 
     function accept() {
       localStorage.setItem(STORAGE_KEY, 'accepted')
       visible.value = false
+      settled.value = true
       window.dispatchEvent(new Event('cookie-consent-accepted'))
     }
 
     function reject() {
       localStorage.setItem(STORAGE_KEY, 'rejected')
       visible.value = false
+      settled.value = true
     }
 
-    return { visible, accept, reject }
+    return { visible, settled, accept, reject }
   }
 }
 </script>
@@ -138,6 +149,41 @@ export default {
 
 .btn-accept:hover {
   background: #0052a3;
+}
+
+/* Persistent cookie settings button */
+.cookie-settings-btn {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  z-index: 1000;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.72);
+  -webkit-backdrop-filter: blur(18px) saturate(150%);
+  backdrop-filter: blur(18px) saturate(150%);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.10);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  text-decoration: none;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  line-height: 1;
+}
+
+.cookie-settings-btn:hover {
+  transform: scale(1.12);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.14);
+}
+
+@media (max-width: 480px) {
+  .cookie-settings-btn {
+    bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+    left: 16px;
+  }
 }
 
 /* Slide up / down transition */
